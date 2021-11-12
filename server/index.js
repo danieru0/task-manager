@@ -1,23 +1,12 @@
+require('dotenv').config()
 const express = require('express');
-const { ApolloServer, gql, AuthenticationError } = require('apollo-server-express');
-var cors = require('cors')
+const { ApolloServer } = require('apollo-server-express');
+const cors = require('cors')
+const mongoose = require('mongoose');
+
 const isTokenValid = require('./utils/validate.js');
 
-const typeDefs = gql`
-    type Query {
-        hello: String
-    }
-`
-
-const resolvers = {
-    Query: {
-        hello: async (parent, args, { user }, info) => {
-            if (!user) throw new AuthenticationError('Not logged in');
-
-            return 'Hello World';
-        }
-    }
-}
+const { typeDefs, resolvers } = require('./graphql');
 
 async function startServer() {
     const app = express();
@@ -37,6 +26,8 @@ async function startServer() {
 
     await apolloServer.start();
     apolloServer.applyMiddleware({app: app});
+
+    await mongoose.connect(process.env.MONGODB_URL);
 
     app.listen(8080, () => console.log('Server running on port 8080!'));
 }

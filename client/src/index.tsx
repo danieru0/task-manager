@@ -6,6 +6,7 @@ import { store } from './app/store';
 import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
 import { Auth0Provider } from "@auth0/auth0-react";
+import { HashRouter } from 'react-router-dom';
 
 import ApolloProviderWithAuth0 from './utils/ApolloProviderWithAuth0';
 
@@ -19,7 +20,9 @@ ReactDOM.render(
 		>
 			<ApolloProviderWithAuth0>
 				<Provider store={store}>
-					<App />
+					<HashRouter>
+						<App />
+					</HashRouter>
 				</Provider>
 			</ApolloProviderWithAuth0>
 		</Auth0Provider>
