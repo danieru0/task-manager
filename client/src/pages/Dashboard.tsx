@@ -1,6 +1,9 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { gql, useMutation } from "@apollo/client";
+import { useAppSelector, useAppDispatch } from '../app/hooks';
+
+import { setTeam, selectTeam } from "../features/team/teamSlice";
 
 import Login from '../components/organisms/Login';
 import DashboardWithoutTeam from "../components/organisms/DashboardWithoutTeam";
@@ -10,14 +13,23 @@ import DashboardWithTeam from "../components/organisms/DashboardWithTeam";
 const createUserMutation = gql`
     mutation createUser($id: String!, $email: String!, $name: String!, $nickname: String!, $picture: String!) {
         createUser(id: $id, email: $email, name: $name, nickname: $nickname, picture: $picture) {
-            team
+            team {
+                name
+                projects {
+                    name
+                }
+                users {
+                    name
+                }
+            }
         }
     }
 `
 
 const Dashboard = () => {
+    const teamSelector = useAppSelector(selectTeam)
+    const dispatch = useAppDispatch();
     const { isAuthenticated, isLoading, getAccessTokenSilently, user } = useAuth0();
-    const [ hasTeam, setHasTeam ] = useState<boolean | null>(null);
     const [ createUser, { data }] = useMutation(createUserMutation);
 
     useEffect(() => {
@@ -41,7 +53,6 @@ const Dashboard = () => {
                         }
                     })
                 }
-
             }
             
             sendMutation();
@@ -50,15 +61,15 @@ const Dashboard = () => {
 
     useEffect(() => {
         if (data) {
-            setHasTeam(data.createUser.team);
+            dispatch(setTeam(data.createUser.team));
         }
-    }, [data]);
+    }, [data, dispatch]);
 
     if (!isAuthenticated) return <Login />;
 
-    if (hasTeam === true) return <DashboardWithTeam />;
+    if (teamSelector.team) return <DashboardWithTeam />;
 
-    if (hasTeam === false) return <DashboardWithoutTeam />;
+    if (teamSelector.team === null) return <DashboardWithoutTeam />;
 
     return <p>loading</p>
 };

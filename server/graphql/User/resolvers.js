@@ -1,5 +1,5 @@
 const User = require('../../models/User.model');
-const {  AuthenticationError, error } = require('apollo-server-express');
+const {  AuthenticationError } = require('apollo-server-express');
 
 const queries = {
     isUserInTeam: (root, args) => {
@@ -10,16 +10,16 @@ const queries = {
 }
 
 const mutations = {
-    createUser: async (_, { id, ...rest }, { userAuth }) => {
-        if (userAuth) throw new AuthenticationError('You are already logged in!'); 
+    createUser: async (_, { id, ...rest }, { user: userAuth }) => {
+        if (!userAuth) throw new AuthenticationError('You are not logged in!'); 
 
-        const user = await User.findById(id);
+        const user = await User.findById(id).populate('team');
 
         if (user) return user;
 
         const newUser = new User({
             ...rest,
-            team: false
+            team: null
         })
         newUser._id = id;
 
