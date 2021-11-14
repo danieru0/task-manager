@@ -7,6 +7,9 @@ import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
 import { Auth0Provider } from "@auth0/auth0-react";
 import { HashRouter } from 'react-router-dom';
+import { ThemeProvider } from 'styled-components';
+import { theme } from './theme/theme';
+import GlobalStyles from './theme/GlobalStyles';
 
 import ApolloProviderWithAuth0 from './utils/ApolloProviderWithAuth0';
 
@@ -20,9 +23,12 @@ ReactDOM.render(
 		>
 			<ApolloProviderWithAuth0>
 				<Provider store={store}>
-					<HashRouter>
-						<App />
-					</HashRouter>
+					<ThemeProvider theme={theme}>
+						<GlobalStyles />
+						<HashRouter>
+							<App />
+						</HashRouter>
+					</ThemeProvider>
 				</Provider>
 			</ApolloProviderWithAuth0>
 		</Auth0Provider>

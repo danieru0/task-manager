@@ -1,12 +1,36 @@
 import { Routes, Route } from 'react-router-dom';
+import styled from 'styled-components';
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faThLarge, faProjectDiagram, faCaretRight, faFileCode, faSignOutAlt, faCommentDots, faCog } from '@fortawesome/free-solid-svg-icons'
+
+import Nav from './components/organisms/Nav';
 
 import Dashboard from './pages/Dashboard';
+import Project from './pages/Project';
+import Messages from './pages/Messages';
+import Settings from './pages/Settings';
+
+library.add(faThLarge, faProjectDiagram, faCaretRight, faFileCode, faSignOutAlt, faCommentDots, faCog);
+
+const Container = styled.div`
+	width: 100%;
+	height: 100vh;
+	display: flex;
+	align-items: flex-start;
+	font-family: ${({theme}) => theme.font};
+`
 
 function App() {
 	return (
-		<Routes>
-			<Route path="/" element={<Dashboard />} />
-		</Routes>
+		<Container>
+			<Nav />
+			<Routes>
+				<Route path="/" element={<Dashboard />} />
+				<Route path="/project/:id" element={<Project />} />
+				<Route path="/messages" element={<Messages />} />
+				<Route path="/settings" element={<Settings />} />
+			</Routes>
+		</Container>
   	);
 }
 
