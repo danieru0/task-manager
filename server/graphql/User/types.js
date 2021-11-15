@@ -1,6 +1,6 @@
 const types = `
     type User {
-        _id: String!
+        id: String!
         email: String!
         name: String!
         nickname: String!

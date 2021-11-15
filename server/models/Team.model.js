@@ -40,6 +40,10 @@ const TeamSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'user'
     },
+    inviteLink: {
+        type: String,
+        required: true
+    },
     users: [{
         type: Schema.Types.ObjectId,
         ref: 'user'

@@ -1,8 +1,15 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 
+interface TeamInterface {
+    name: string;
+    inviteLink: string;
+    users: [];
+    projects: [];
+}
+
 export interface TeamState {
-    team: any
+    team: TeamInterface | undefined
 }
 
 const initialState: TeamState = {

@@ -13,15 +13,20 @@ const mutations = {
     createUser: async (_, { id, ...rest }, { user: userAuth }) => {
         if (!userAuth) throw new AuthenticationError('You are not logged in!'); 
 
-        const user = await User.findById(id).populate('team');
-
+        const user = await User.findOne({id: id}).populate({
+            path: 'team',
+            populate: {
+                path: 'author'
+            }
+        })
+        
         if (user) return user;
 
         const newUser = new User({
             ...rest,
+            id,
             team: null
         })
-        newUser._id = id;
 
         await newUser.save();
 

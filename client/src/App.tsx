@@ -16,20 +16,26 @@ const Container = styled.div`
 	width: 100%;
 	height: 100vh;
 	display: flex;
-	align-items: flex-start;
 	font-family: ${({theme}) => theme.font};
+`
+
+const Wrapper = styled.div`
+	margin-left: 280px;
+	width: calc(100% - 280px);
 `
 
 function App() {
 	return (
 		<Container>
 			<Nav />
-			<Routes>
-				<Route path="/" element={<Dashboard />} />
-				<Route path="/project/:id" element={<Project />} />
-				<Route path="/messages" element={<Messages />} />
-				<Route path="/settings" element={<Settings />} />
-			</Routes>
+			<Wrapper>
+				<Routes>
+					<Route path="/" element={<Dashboard />} />
+					<Route path="/project/:id" element={<Project />} />
+					<Route path="/messages" element={<Messages />} />
+					<Route path="/settings" element={<Settings />} />
+				</Routes>
+			</Wrapper>
 		</Container>
   	);
 }

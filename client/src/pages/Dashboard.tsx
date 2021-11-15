@@ -15,6 +15,7 @@ const createUserMutation = gql`
         createUser(id: $id, email: $email, name: $name, nickname: $nickname, picture: $picture) {
             team {
                 name
+                inviteLink
                 projects {
                     name
                 }

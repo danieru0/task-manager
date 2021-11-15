@@ -20,6 +20,7 @@ const types = `
         users: [User]
         projects: [Project]
         author: User!
+        inviteLink: String!
     }
 `
 

@@ -24,6 +24,22 @@ const Container = styled(Link)<IContainer>`
     text-decoration: none;
     padding-left: 30px;
     transition: background .3s;
+    position: relative;
+
+    &:before {
+        content: "";
+        display: block;
+        width: 5px;
+        height: 30px;
+        background: ${({theme}) => theme.secondary};
+        left: 0px;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        position: absolute;
+        transform: translateX(-30px);
+        transition: transform .3s;
+    }
 
     &:hover {
         background: ${({theme}) => theme.navActiveBg};
@@ -31,6 +47,9 @@ const Container = styled(Link)<IContainer>`
 
     ${({active}) => active && css`
         background: ${({theme}) => theme.navActiveBg};
+        &:before {
+            transform: translatex(0px);
+        }
     `}
 `
 

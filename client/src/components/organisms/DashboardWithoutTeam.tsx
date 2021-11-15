@@ -9,6 +9,7 @@ const createTeamMutation = gql`
     mutation createTeam($name: String!, $authorId: String!) {
         createTeam(name: $name, authorId: $authorId) {
             name
+            inviteLink
             users {
                 name
             }
