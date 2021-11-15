@@ -21,9 +21,6 @@ const isAuthorOfTeam = gql`
 const Container = styled.div`
     width: 100%;
     height: 100%;
-`
-
-const Wrapper = styled.div`
     padding: 50px;
     display: flex;
     flex-direction: column;
@@ -74,30 +71,28 @@ const DashboardWithTeam = () => {
 
     return (
         <Container>
-            <Wrapper>
-                <TeamName>{teamSelector.team!.name}</TeamName>
-                {data && data.isAuthorOfTeam && (
-                    <> 
-                        <InfoBlocks>
-                            <StyledInfobBlock />
-                            <StyledInfobBlock />
-                            <StyledInfobBlock />
-                            <StyledInfobBlock />
-                        </InfoBlocks>
-                        <SectionName>Invite link</SectionName>
-                        <InviteLink link={window.location.href + teamSelector.team!.inviteLink} />
-                        <InviteRequests />
-                        <SectionName>Manage</SectionName>
-                        <ManageButtons>
-                            <Button size="large" onClick={() => alert('manage')} text="manage users" />
-                            <Button size="large" onClick={() => alert('manage')} text="manage projects" />
-                            <Button size="large" onClick={() => alert('manage')} text="manage team" />
-                        </ManageButtons>
-                    </>
-                )}
-                <SectionName>Your tasks</SectionName>
-                <YourTasks />
-            </Wrapper>
+            <TeamName>{teamSelector.team!.name}</TeamName>
+            {data && data.isAuthorOfTeam && (
+                <> 
+                    <InfoBlocks>
+                        <StyledInfobBlock />
+                        <StyledInfobBlock />
+                        <StyledInfobBlock />
+                        <StyledInfobBlock />
+                    </InfoBlocks>
+                    <SectionName>Invite link</SectionName>
+                    <InviteLink link={window.location.href + teamSelector.team!.inviteLink} />
+                    <InviteRequests />
+                    <SectionName>Manage</SectionName>
+                    <ManageButtons>
+                        <Button size="large" onClick={() => alert('manage')} text="manage users" />
+                        <Button size="large" onClick={() => alert('manage')} text="manage projects" />
+                        <Button size="large" onClick={() => alert('manage')} text="manage team" />
+                    </ManageButtons>
+                </>
+            )}
+            <SectionName>Your tasks</SectionName>
+            <YourTasks />
         </Container>
     );
 };

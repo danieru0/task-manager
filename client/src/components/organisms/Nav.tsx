@@ -1,6 +1,9 @@
 import { useLocation } from 'react-router';
 import { useAuth0 } from "@auth0/auth0-react";
 import styled from 'styled-components';
+import { useAppSelector } from '../../app/hooks';
+
+import { selectTeam } from "../../features/team/teamSlice";
 
 import Logo from '../atoms/Logo';
 
@@ -26,14 +29,15 @@ const Menu = styled.ul`
 const Nav = () => {
     const location = useLocation();
     const { isAuthenticated } = useAuth0();
+    const teamSelector = useAppSelector(selectTeam);
 
     return (
         <Container>
             <Logo />
             <Menu>
                 <NavLink active={location.pathname === '/'} to="/" icon="th-large" text="Overview" />
-                { isAuthenticated && <NavProjects /> }
-                { isAuthenticated && <NavLink active={location.pathname === '/messages'} to="/messages" icon="comment-dots" text="Messages" /> }
+                { isAuthenticated && teamSelector.team && <NavProjects /> }
+                { isAuthenticated && teamSelector.team && <NavLink active={location.pathname === '/messages'} to="/messages" icon="comment-dots" text="Messages" /> }
                 { isAuthenticated && <NavLink active={location.pathname === '/settings'} to="/settings" icon="cog" text="Settings" /> }
             </Menu>
             { isAuthenticated && <NavFooter /> }
