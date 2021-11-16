@@ -16,6 +16,12 @@ const acceptTeamRequestMutation = gql`
     }
 `
 
+const rejectTeamRequestMutation = gql`
+    mutation rejectTeamRequest($userId: String!, $teamId: String!) {
+        rejectTeamRequest(userId: $userId, teamId: $teamId)
+    }
+`
+
 const Container = styled.div`
     width: 800px;
     background: ${({theme}) => theme.navActiveBg};
@@ -39,6 +45,7 @@ const NoInvitesText = styled.span`
 
 const InviteRequests = ({ users, teamId }: IInviteRequests) => {
     const [ acceptTeamRequest ] = useMutation(acceptTeamRequestMutation);
+    const [ rejectTeamRequest ] = useMutation(rejectTeamRequestMutation);
 
     const handleAcceptClick = (id: string) => {
         acceptTeamRequest({
@@ -50,7 +57,12 @@ const InviteRequests = ({ users, teamId }: IInviteRequests) => {
     }
 
     const handleRejectClick = (id: string) => {
-
+        rejectTeamRequest({
+            variables: {
+                userId: id,
+                teamId
+            }
+        })
     }
 
     return (

@@ -57,13 +57,10 @@ const mutations = {
         if (!userAuth) throw new AuthenticationError('You have to be logged in!');
 
         const user = await User.findOne({id: userAuth.decoded.sub});
-
         if (!user) throw new ValidationError('There is no user in database!');
-
         if (user.team) throw new ValidationError('You are already in team!');
 
         const team = await Team.findOne({ inviteLink: inviteId }).populate('inviteRequests');
-
         if (!team) throw new ValidationError('Invalid link!');
 
         const isUserSendInvite = team.inviteRequests.find(request => request.id === userAuth.decoded.sub);
@@ -79,17 +76,14 @@ const mutations = {
         if (!userAuth) throw new AuthenticationError('You have to be logged in!');
 
         const user = await User.findOne({id: userId});
-
         if (!user) throw new ValidationError('User with this id does not exists!');
-
         if (user.team) throw new ValidationError('This user is already in a team!');
 
-        const team = await Team.findOne({ id: teamId }).populate('inviteRequests');
-
+        const team = await Team.findOne({ id: teamId }).populate('inviteRequests').populate('author');
         if (!team) throw new ValidationError('There is no team with this id!');
+        if (team.author.id !== userAuth.decoded.sub) throw new ValidationError('You are not author of this team!');
 
         const isUserInRequests = team.inviteRequests.find(request => request.id === userId);
-
         if (!isUserInRequests) throw new ValidationError('User with this id is not in request list!');
 
         const inviteRequestsWithoutUser = team.inviteRequests.filter(request => request.id !== userId);
@@ -100,6 +94,27 @@ const mutations = {
 
         await team.save();
         await user.save();
+
+        return true;
+    },
+    rejectTeamRequest: async (_, { userId, teamId }, { user: userAuth }) => {
+        if (!userAuth) throw new AuthenticationError('You have to be logged in!');
+        
+        const user = await User.findOne({id: userId});
+        if (!user) throw new ValidationError('User with this id does not exists!');
+
+        const team = await Team.findOne({ id: teamId }).populate('inviteRequests').populate('author');
+        if (!team) throw new ValidationError('There is no team with this id!');
+        if (team.author.id !== userAuth.decoded.sub) throw new ValidationError('You are not author of this team!'); 
+        
+        const isUserInRequests = team.inviteRequests.find(request => request.id === userId);
+        if (!isUserInRequests) throw new ValidationError('User with this id is not in request list!');
+
+        const inviteRequestsWithoutUser = team.inviteRequests.filter(request => request.id !== userId);
+
+        team.inviteRequests = inviteRequestsWithoutUser;
+
+        await team.save();
 
         return true;
     }
