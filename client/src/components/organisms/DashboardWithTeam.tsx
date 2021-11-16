@@ -81,8 +81,8 @@ const DashboardWithTeam = () => {
                         <StyledInfobBlock />
                     </InfoBlocks>
                     <SectionName>Invite link</SectionName>
-                    <InviteLink link={window.location.href + teamSelector.team!.inviteLink} />
-                    <InviteRequests />
+                    <InviteLink link={window.location.href.split('/#/')[0] + teamSelector.team!.inviteLink} />
+                    <InviteRequests teamId={teamSelector.team!.id} users={teamSelector.team!.inviteRequests} />
                     <SectionName>Manage</SectionName>
                     <ManageButtons>
                         <Button size="large" onClick={() => alert('manage')} text="manage users" />

@@ -20,6 +20,8 @@ ReactDOM.render(
 			clientId={process.env.REACT_APP_CLIENT_ID!}
 			redirectUri={window.location.origin}
 			audience={process.env.REACT_APP_AUDIENCE}
+			useRefreshTokens
+			cacheLocation="localstorage"
 		>
 			<ApolloProviderWithAuth0>
 				<Provider store={store}>

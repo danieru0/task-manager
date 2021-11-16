@@ -13,6 +13,7 @@ import ExplanationText from '../atoms/ExplanationText';
 const createTeamMutation = gql`
     mutation createTeam($name: String!, $authorId: String!) {
         createTeam(name: $name, authorId: $authorId) {
+            id
             name
             inviteLink
             users {

@@ -1,6 +1,20 @@
 import styled from 'styled-components';
+import { gql, useMutation } from "@apollo/client";
+
+import { UserInterface } from '../../features/team/teamSlice';
 
 import InviteItem from '../atoms/InviteItem';
+
+interface IInviteRequests {
+    users: [UserInterface];
+    teamId: string;
+}
+
+const acceptTeamRequestMutation = gql`
+    mutation acceptTeamRequest($userId: String!, $teamId: String!) {
+        acceptTeamRequest(userId: $userId, teamId: $teamId)
+    }
+`
 
 const Container = styled.div`
     width: 800px;
@@ -23,12 +37,37 @@ const NoInvitesText = styled.span`
     font-size: 20px;
 `
 
-const InviteRequests = () => {
+const InviteRequests = ({ users, teamId }: IInviteRequests) => {
+    const [ acceptTeamRequest ] = useMutation(acceptTeamRequestMutation);
+
+    const handleAcceptClick = (id: string) => {
+        acceptTeamRequest({
+            variables: {
+                userId: id,
+                teamId
+            }
+        })
+    }
+
+    const handleRejectClick = (id: string) => {
+
+    }
+
     return (
         <Container>
-            <InvitesList>
-                <InviteItem />
-            </InvitesList>
+            {
+                users.length > 0 ? (
+                    <InvitesList>
+                        {
+                            users.map(user => {
+                                return <InviteItem onRejectClick={(e, id) => handleRejectClick(id)} onAcceptClick={(e, id) => handleAcceptClick(id)} key={user.id} {...user} />
+                            })
+                        }
+                    </InvitesList>
+                ) : (
+                    <NoInvitesText>There are no invites</NoInvitesText>
+                )
+            }
         </Container>
     );
 };

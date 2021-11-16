@@ -1,11 +1,20 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 
+export interface UserInterface {
+    id: string;
+    email: string;
+    nickname: string;
+    picture: string;
+}
+
 interface TeamInterface {
+    id: string;
     name: string;
     inviteLink: string;
     users: [];
     projects: [];
+    inviteRequests: [UserInterface]
 }
 
 export interface TeamState {

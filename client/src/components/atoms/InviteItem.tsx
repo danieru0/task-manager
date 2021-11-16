@@ -1,6 +1,13 @@
 import styled from 'styled-components';
 
+import { UserInterface } from '../../features/team/teamSlice';
+
 import Button from './Button';
+
+interface IInviteItem extends UserInterface {
+    onAcceptClick: (e: React.MouseEvent<HTMLButtonElement>, id: string) => void;
+    onRejectClick: (e: React.MouseEvent<HTMLButtonElement>, id: string) => void;
+}
 
 const Container = styled.li`
     width: 100%;
@@ -32,17 +39,14 @@ const StyledButton = styled(Button)`
     margin: 0px 5px;
 `
 
-const InviteItem = () => {
+const InviteItem = ({ picture, email, nickname, id, onAcceptClick, onRejectClick }: IInviteItem) => {
     return (
         <Container>
-            <Avatar src="https://i2.wp.com/cdn.auth0.com/avatars/el.png?ssl=1" />
-            <UserData>
-                elosik
-                elosik@onet.pl
-            </UserData>
+            <Avatar src={picture} />
+            <UserData>{`${nickname} ${email}`}</UserData>
             <ButtonsWrapper>
-                <StyledButton size="small" text="accept" onClick={() => alert('accept')} />
-                <StyledButton size="small" text="reject" onClick={() => alert('reject')} />
+                <StyledButton size="small" text="accept" onClick={(e: React.MouseEvent<HTMLButtonElement>) => onAcceptClick(e, id)} />
+                <StyledButton size="small" text="reject" onClick={(e: React.MouseEvent<HTMLButtonElement>) => onRejectClick(e, id)} />
             </ButtonsWrapper>
         </Container>
     );

@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard';
 import Project from './pages/Project';
 import Messages from './pages/Messages';
 import Settings from './pages/Settings';
+import Join from './pages/Join';
 
 library.add(faThLarge, faProjectDiagram, faCaretRight, faFileCode, faSignOutAlt, faCommentDots, faCog);
 
@@ -31,6 +32,7 @@ function App() {
 			<Wrapper>
 				<Routes>
 					<Route path="/" element={<Dashboard />} />
+					<Route path="/join/:id" element={<Join />} />
 					<Route path="/project/:id" element={<Project />} />
 					<Route path="/messages" element={<Messages />} />
 					<Route path="/settings" element={<Settings />} />

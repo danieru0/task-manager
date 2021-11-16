@@ -32,6 +32,10 @@ ProjectModel.add({
 })
 
 const TeamSchema = new Schema({
+    id: {
+        type: String,
+        required: true
+    },
     name: {
         type: String,
         required: true
@@ -44,6 +48,10 @@ const TeamSchema = new Schema({
         type: String,
         required: true
     },
+    inviteRequests: [{
+        type: Schema.Types.ObjectId,
+        ref: 'user'
+    }],
     users: [{
         type: Schema.Types.ObjectId,
         ref: 'user'

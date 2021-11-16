@@ -16,11 +16,13 @@ const types = `
     }
 
     type Team {
+        id: String!
         name: String!
         users: [User]
         projects: [Project]
         author: User!
         inviteLink: String!
+        inviteRequests: [User]
     }
 `
 

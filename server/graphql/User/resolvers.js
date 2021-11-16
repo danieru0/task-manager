@@ -16,7 +16,17 @@ const mutations = {
         const user = await User.findOne({id: id}).populate({
             path: 'team',
             populate: {
-                path: 'author'
+                path: 'author',
+            }
+        }).populate({
+            path: 'team',
+            populate: {
+                path: 'users'
+            }
+        }).populate({
+            path: 'team',
+            populate: {
+                'path': 'inviteRequests'
             }
         })
         
