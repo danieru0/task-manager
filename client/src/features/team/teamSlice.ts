@@ -14,7 +14,7 @@ interface TeamInterface {
     inviteLink: string;
     users: [];
     projects: [];
-    inviteRequests: [UserInterface]
+    inviteRequests: UserInterface[]
 }
 
 export interface TeamState {
@@ -31,11 +31,16 @@ export const teamSlice = createSlice({
     reducers: {
         setTeam: (state, action: PayloadAction<any>) => {
             state.team = action.payload;
+        },
+        removeInviteRequest: (state, action: PayloadAction<string>) => {
+            if (state.team) {
+                state.team.inviteRequests = state.team.inviteRequests.filter(request => request.id !== action.payload);
+            }
         }
     }
 })
 
-export const { setTeam } = teamSlice.actions;
+export const { setTeam, removeInviteRequest } = teamSlice.actions;
 
 export const selectTeam = (state: RootState) => state.team;
 

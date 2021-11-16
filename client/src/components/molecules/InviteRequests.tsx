@@ -1,12 +1,15 @@
 import styled from 'styled-components';
 import { gql, useMutation } from "@apollo/client";
+import { useAppDispatch } from '../../app/hooks';
+
+import { removeInviteRequest } from "../../features/team/teamSlice";
 
 import { UserInterface } from '../../features/team/teamSlice';
 
 import InviteItem from '../atoms/InviteItem';
 
 interface IInviteRequests {
-    users: [UserInterface];
+    users: UserInterface[];
     teamId: string;
 }
 
@@ -44,24 +47,33 @@ const NoInvitesText = styled.span`
 `
 
 const InviteRequests = ({ users, teamId }: IInviteRequests) => {
-    const [ acceptTeamRequest ] = useMutation(acceptTeamRequestMutation);
-    const [ rejectTeamRequest ] = useMutation(rejectTeamRequestMutation);
+    const dispatch = useAppDispatch();
+    const [ acceptTeamRequest, { loading: acceptTeamLoading } ] = useMutation(acceptTeamRequestMutation);
+    const [ rejectTeamRequest, { loading: rejectTeamLoading } ] = useMutation(rejectTeamRequestMutation);
 
     const handleAcceptClick = (id: string) => {
+        if (acceptTeamLoading) return false;
+
         acceptTeamRequest({
             variables: {
                 userId: id,
                 teamId
             }
+        }).then(() => {
+            dispatch(removeInviteRequest(id));
         })
     }
 
     const handleRejectClick = (id: string) => {
+        if (rejectTeamLoading) return false;
+
         rejectTeamRequest({
             variables: {
                 userId: id,
                 teamId
             }
+        }).then(() => {
+            dispatch(removeInviteRequest(id));
         })
     }
 
