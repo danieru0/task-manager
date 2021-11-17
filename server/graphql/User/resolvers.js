@@ -2,15 +2,38 @@ const User = require('../../models/User.model');
 const {  AuthenticationError } = require('apollo-server-express');
 
 const queries = {
-    isUserInTeam: (root, args) => {
-        
+    getUserTeam: async (_, {}, { user: userAuth, socketUser }) => {
+        if (!userAuth) throw new AuthenticationError('You are not logged in!'); 
 
-        return true;
+        const user = await User.findOne({id: userAuth.decoded.sub}).populate({
+            path: 'team',
+            populate: {
+                path: 'author',
+            }
+        }).populate({
+            path: 'team',
+            populate: {
+                path: 'users'
+            }
+        }).populate({
+            path: 'team',
+            populate: {
+                'path': 'inviteRequests'
+            }
+        })
+
+        if (!user) throw new ValidationError('User dont exists');
+
+        if (socketUser) socketUser.databaseId = userAuth.decoded.sub;
+        
+        if (user.team) return user.team;
+
+        return {};
     }
 }
 
 const mutations = {
-    createUser: async (_, { id, ...rest }, { user: userAuth }) => {
+    createUser: async (_, { id, ...rest }, { user: userAuth, socketUser }) => {
         if (!userAuth) throw new AuthenticationError('You are not logged in!'); 
 
         const user = await User.findOne({id: id}).populate({
@@ -30,6 +53,8 @@ const mutations = {
             }
         })
         
+        if (socketUser) socketUser.databaseId = id;
+
         if (user) return user;
 
         const newUser = new User({

@@ -12,6 +12,7 @@ import { theme } from './theme/theme';
 import GlobalStyles from './theme/GlobalStyles';
 
 import ApolloProviderWithAuth0 from './utils/ApolloProviderWithAuth0';
+import SocketContextProvider from './utils/SocketContextProvider';
 
 ReactDOM.render(
 	<React.StrictMode>
@@ -23,16 +24,18 @@ ReactDOM.render(
 			useRefreshTokens
 			cacheLocation="localstorage"
 		>
-			<ApolloProviderWithAuth0>
-				<Provider store={store}>
-					<ThemeProvider theme={theme}>
-						<GlobalStyles />
-						<HashRouter>
-							<App />
-						</HashRouter>
-					</ThemeProvider>
-				</Provider>
-			</ApolloProviderWithAuth0>
+			<SocketContextProvider>
+				<ApolloProviderWithAuth0>
+					<Provider store={store}>
+						<ThemeProvider theme={theme}>
+							<GlobalStyles />
+							<HashRouter>
+								<App />
+							</HashRouter>
+						</ThemeProvider>
+					</Provider>
+				</ApolloProviderWithAuth0>
+			</SocketContextProvider>
 		</Auth0Provider>
   	</React.StrictMode>,
   	document.getElementById('root')

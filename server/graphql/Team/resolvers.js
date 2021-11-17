@@ -53,14 +53,14 @@ const mutations = {
 
         return newTeam;
     },
-    joinTeamRequest: async (_, { inviteId }, { user: userAuth }) => {
+    joinTeamRequest: async (_, { inviteId }, { user: userAuth, allSockets, io }) => {
         if (!userAuth) throw new AuthenticationError('You have to be logged in!');
 
         const user = await User.findOne({id: userAuth.decoded.sub});
         if (!user) throw new ValidationError('There is no user in database!');
         if (user.team) throw new ValidationError('You are already in team!');
 
-        const team = await Team.findOne({ inviteLink: inviteId }).populate('inviteRequests');
+        const team = await Team.findOne({ inviteLink: inviteId }).populate('inviteRequests').populate('author');
         if (!team) throw new ValidationError('Invalid link!');
 
         const isUserSendInvite = team.inviteRequests.find(request => request.id === userAuth.decoded.sub);
@@ -68,11 +68,20 @@ const mutations = {
 
         team.inviteRequests.push(user);
 
+        const authorSocket = allSockets.find(user => user.databaseId === team.author.id);
+
+        if (authorSocket) io.to(authorSocket.socketId).emit('sendJoinTeamRequestSocket', {
+            id: user.id,
+            email: user.email,
+            nickname: user.nickname,
+            picture: user.picture
+        });
+
         await team.save();
 
         return true;
     },
-    acceptTeamRequest: async (_, { userId, teamId }, { user: userAuth }) => {
+    acceptTeamRequest: async (_, { userId, teamId }, { user: userAuth, allSockets, io }) => {
         if (!userAuth) throw new AuthenticationError('You have to be logged in!');
 
         const user = await User.findOne({id: userId});
@@ -88,6 +97,8 @@ const mutations = {
 
         const inviteRequestsWithoutUser = team.inviteRequests.filter(request => request.id !== userId);
 
+        const userSocket = allSockets.find(user => user.databaseId === userId);
+
         team.inviteRequests = inviteRequestsWithoutUser;
         team.users.push(user);
         user.team = team;
@@ -95,11 +106,13 @@ const mutations = {
         await team.save();
         await user.save();
 
+        if (userSocket) io.to(userSocket.socketId).emit('sendAcceptTeamRequestSocket');
+
         return true;
     },
-    rejectTeamRequest: async (_, { userId, teamId }, { user: userAuth }) => {
+    rejectTeamRequest: async (_, { userId, teamId }, { user: userAuth, allSockets, io }) => {
         if (!userAuth) throw new AuthenticationError('You have to be logged in!');
-        
+
         const user = await User.findOne({id: userId});
         if (!user) throw new ValidationError('User with this id does not exists!');
 
@@ -109,6 +122,10 @@ const mutations = {
         
         const isUserInRequests = team.inviteRequests.find(request => request.id === userId);
         if (!isUserInRequests) throw new ValidationError('User with this id is not in request list!');
+
+        const userSocket = allSockets.find(user => user.databaseId === userId);
+
+        if (userSocket) io.to(userSocket.socketId).emit('sendRejectTeamRequestSocket');
 
         const inviteRequestsWithoutUser = team.inviteRequests.filter(request => request.id !== userId);
 

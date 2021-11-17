@@ -36,11 +36,16 @@ export const teamSlice = createSlice({
             if (state.team) {
                 state.team.inviteRequests = state.team.inviteRequests.filter(request => request.id !== action.payload);
             }
+        },
+        addInviteRequest: (state, action: PayloadAction<UserInterface>) => {
+            if (state.team) {
+                state.team.inviteRequests = [...state.team.inviteRequests, action.payload]
+            }
         }
     }
 })
 
-export const { setTeam, removeInviteRequest } = teamSlice.actions;
+export const { setTeam, removeInviteRequest, addInviteRequest } = teamSlice.actions;
 
 export const selectTeam = (state: RootState) => state.team;
 

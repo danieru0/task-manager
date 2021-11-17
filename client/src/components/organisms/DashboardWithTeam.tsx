@@ -67,7 +67,7 @@ const DashboardWithTeam = () => {
         }
     });
 
-    if (!teamSelector.team && loading) return <span>loading</span>
+    if (!teamSelector.team || loading) return <span>loading</span>
 
     return (
         <Container>

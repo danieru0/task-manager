@@ -1,5 +1,5 @@
 const queries = `
-    isUserInTeam(id: String!): Boolean
+    getUserTeam: Team
 `
 
 module.exports = queries;

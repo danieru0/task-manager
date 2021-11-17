@@ -1,7 +1,15 @@
+import { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import styled from 'styled-components';
+import { useAuth0 } from "@auth0/auth0-react";
+import { gql, useLazyQuery } from "@apollo/client";
+import { useAppDispatch } from './app/hooks';
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faThLarge, faProjectDiagram, faCaretRight, faFileCode, faSignOutAlt, faCommentDots, faCog } from '@fortawesome/free-solid-svg-icons'
+
+import { useSocketContext } from './context/socketContext';
+
+import { setTeam, addInviteRequest } from "./features/team/teamSlice";
 
 import Nav from './components/organisms/Nav';
 
@@ -12,6 +20,29 @@ import Settings from './pages/Settings';
 import Join from './pages/Join';
 
 library.add(faThLarge, faProjectDiagram, faCaretRight, faFileCode, faSignOutAlt, faCommentDots, faCog);
+
+const getUserTeamQuery = gql`
+	query getUserTeam {
+		getUserTeam {
+			id
+			name
+			inviteLink
+			projects {
+				name
+			}
+			users {
+				name
+			}
+			inviteRequests {
+				id
+				picture
+				email
+				nickname
+			}
+		}
+	}
+
+`
 
 const Container = styled.div`
 	width: 100%;
@@ -26,6 +57,49 @@ const Wrapper = styled.div`
 `
 
 function App() {
+	const dispatch = useAppDispatch();
+	const { isAuthenticated } = useAuth0();
+	const socket = useSocketContext();
+	const [ getTeam, { data, loading } ] = useLazyQuery(getUserTeamQuery);
+
+	useEffect(() => {
+		if (isAuthenticated) {
+			getTeam()
+		}
+	}, [isAuthenticated, getTeam, socket]);
+
+	useEffect(() => {
+		if (data) {
+			dispatch(setTeam(data.getUserTeam));
+		}
+	}, [data, dispatch]);
+
+	useEffect(() => {
+		if (socket) {
+			socket.on('sendRejectTeamRequestSocket', () => {
+				alert('Your request was rejected!');
+			});
+
+			socket.on('sendJoinTeamRequestSocket', userData => {
+				dispatch(addInviteRequest(userData));
+			})
+
+			socket.on('sendAcceptTeamRequestSocket', () => {
+				getTeam();
+			})
+		}
+
+		return () => {
+			if (socket) {
+				socket.off('sendRejectTeamRequestSocket');
+				socket.off('sendJoinTeamRequestSocket');
+				socket.off('sendAcceptTeamRequestSocket');
+			}
+		}
+	}, [socket, dispatch, getTeam]);
+
+	if (loading) return <span>loading</span>
+
 	return (
 		<Container>
 			<Nav />
