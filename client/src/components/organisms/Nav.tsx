@@ -36,7 +36,7 @@ const Nav = () => {
             <Logo />
             <Menu>
                 <NavLink active={location.pathname === '/'} to="/" icon="th-large" text="Overview" />
-                { isAuthenticated && teamSelector.team && <NavProjects /> }
+                { isAuthenticated && teamSelector.team && <NavProjects active={location.pathname.split('/')[1] === 'project'} clickedProjectId={location.pathname.split('/')[2]} projects={teamSelector.team.projects} /> }
                 { isAuthenticated && teamSelector.team && <NavLink active={location.pathname === '/messages'} to="/messages" icon="comment-dots" text="Messages" /> }
                 { isAuthenticated && <NavLink active={location.pathname === '/settings'} to="/settings" icon="cog" text="Settings" /> }
             </Menu>

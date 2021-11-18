@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { gql, useQuery } from "@apollo/client";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useAppSelector } from '../../app/hooks';
+import { useNavigate } from 'react-router-dom';
 
 import { selectTeam } from "../../features/team/teamSlice";
 
@@ -60,12 +61,17 @@ const ManageButtons = styled.div`
 
 const DashboardWithTeam = () => {
     const { user } = useAuth0();
+    const navigate = useNavigate();
     const teamSelector = useAppSelector(selectTeam);
     const { data, loading } = useQuery(isAuthorOfTeam, {
         variables: {
             userId: user!.sub
         }
     });
+
+    const handleManageProjectsButton = () => {
+        navigate('manage-projects');
+    }
 
     if (!teamSelector.team || loading) return <span>loading</span>
 
@@ -86,7 +92,7 @@ const DashboardWithTeam = () => {
                     <SectionName>Manage</SectionName>
                     <ManageButtons>
                         <Button size="large" onClick={() => alert('manage')} text="manage users" />
-                        <Button size="large" onClick={() => alert('manage')} text="manage projects" />
+                        <Button size="large" onClick={handleManageProjectsButton} text="manage projects" />
                         <Button size="large" onClick={() => alert('manage')} text="manage team" />
                     </ManageButtons>
                 </>

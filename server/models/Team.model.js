@@ -18,8 +18,16 @@ TaskModel.add({
 
 const ProjectModel = new Schema();
 ProjectModel.add({
+    id: {
+        type: String,
+        required: true
+    },
     name: {
         type: String,
+        required: true
+    },
+    tasksCounter: {
+        type: Number,
         required: true
     },
     kanbans: [{

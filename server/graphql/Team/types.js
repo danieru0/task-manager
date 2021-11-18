@@ -11,7 +11,9 @@ const types = `
     }
 
     type Project {
+        id: String!
         name: String!
+        tasksCounter: Int!
         kanbans: [Kanban]
     }
 

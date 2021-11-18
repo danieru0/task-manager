@@ -1,12 +1,15 @@
 import styled from 'styled-components';
 import { lighten } from 'polished';
 
+import CircleSpinner from './CircleSpinner';
+
 type size = 'small' | 'normal' | 'large';
 
 interface IButton {
     text: string;
     onClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
     size?: size;
+    loading?: boolean;
     [key: string]: any;
 }
 
@@ -39,10 +42,10 @@ const Container = styled.button<ContainerProps>`
     
 `
 
-const Button = ({ text, onClick, size = 'normal', ...props }: IButton) => {
+const Button = ({ text, onClick, size = 'normal', loading, ...props }: IButton) => {
     return (
         <Container size={size} onClick={onClick} {...props}>
-            {text}
+            {loading ? <CircleSpinner /> : text}
         </Container>
     );
 };

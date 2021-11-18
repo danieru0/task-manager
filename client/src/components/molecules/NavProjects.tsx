@@ -1,8 +1,16 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
+
+import { ProjectInterface } from '../../features/team/teamSlice';
 
 import ProjectLink from '../atoms/ProjectLink';
 import Icon from '../atoms/Icon';
+
+interface INavProjects {
+    projects: ProjectInterface[];
+    active: Boolean;
+    clickedProjectId: string;
+}
 
 interface ProjectsButtonProps {
     projectsclicked: string | undefined;
@@ -106,13 +114,25 @@ const ProjectsWrapper = styled.div`
     flex: 1;
 `
 
-const NavProjects = () => {
+const NavProjects = ({ projects, active, clickedProjectId }: INavProjects) => {
     const [ projectsClicked, setProjectsClicked ] = useState(false);
-    const [ projectsHeight, setProjectsHeight ] = useState(150); //eslint-disable-line
+    const [ projectsHeight, setProjectsHeight ] = useState(0); //eslint-disable-line
 
     const handleProjectsBtnClick = () => {
         setProjectsClicked(prev => !prev);
     }
+
+    useEffect(() => {
+        if (projects) {
+            setProjectsHeight(projects.length * 50);
+        }
+    }, [projects]);
+
+    useEffect(() => {
+        if (!active) {
+            setProjectsClicked(false);
+        }
+    }, [active]);
 
     return (
         <Container>
@@ -124,9 +144,11 @@ const NavProjects = () => {
             <ProjectsMenu projectsHeight={projectsHeight} projectsclicked={projectsClicked ? 'true' : undefined}>
                 <ProjectsLine />
                 <ProjectsWrapper>
-                    <ProjectLink to="/project/id" text="rojoo.com" />
-                    <ProjectLink to="/project/id" text="rojoo.com" />
-                    <ProjectLink to="/project/id" text="rojoo.com" />
+                    {
+                        projects.map(project => {
+                            return <ProjectLink key={project.id} active={clickedProjectId === project.id} to={`/project/${project.id}`} text={project.name} />
+                        })
+                    }
                 </ProjectsWrapper>
             </ProjectsMenu>
         </Container>

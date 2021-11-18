@@ -1,6 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 
+export interface ProjectInterface {
+    id: string;
+    name: string;
+    tasksCounter: number;
+    kanbans: [];
+}
+
 export interface UserInterface {
     id: string;
     email: string;
@@ -13,7 +20,7 @@ interface TeamInterface {
     name: string;
     inviteLink: string;
     users: [];
-    projects: [];
+    projects: ProjectInterface[];
     inviteRequests: UserInterface[]
 }
 
@@ -41,11 +48,16 @@ export const teamSlice = createSlice({
             if (state.team) {
                 state.team.inviteRequests = [...state.team.inviteRequests, action.payload]
             }
+        },
+        addProject: (state, action: PayloadAction<ProjectInterface>) => {
+            if (state.team) {
+                state.team.projects = [...state.team.projects, action.payload];
+            }
         }
     }
 })
 
-export const { setTeam, removeInviteRequest, addInviteRequest } = teamSlice.actions;
+export const { setTeam, removeInviteRequest, addInviteRequest, addProject } = teamSlice.actions;
 
 export const selectTeam = (state: RootState) => state.team;
 

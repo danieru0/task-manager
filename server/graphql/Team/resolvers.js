@@ -134,6 +134,32 @@ const mutations = {
         await team.save();
 
         return true;
+    },
+    createProject: async (_, { name, teamId }, { user: userAuth }) => {
+        if (!userAuth) throw new AuthenticationError('You have to be logged in!');
+
+        const user = await User.findOne({id: userAuth.decoded.sub});
+        if (!user) throw new ValidationError('User dont exists');
+        
+        const team = await Team.findOne({ id: teamId }).populate('author');
+        if (!team) throw new ValidationError('There is no team with this id!');
+        if (team.author.id !== userAuth.decoded.sub) throw new ValidationError('You are not author of this team!'); 
+
+        const projectId = mongoose.Types.ObjectId();
+
+        const newProject = {
+            _id: projectId,
+            id: projectId,
+            tasksCounter: 0,
+            name,
+            kanbans: []
+        }
+
+        team.projects.push(newProject);
+
+        await team.save();
+
+        return newProject
     }
 }
 

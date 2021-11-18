@@ -5,12 +5,13 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { gql, useLazyQuery } from "@apollo/client";
 import { useAppDispatch } from './app/hooks';
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faThLarge, faProjectDiagram, faCaretRight, faFileCode, faSignOutAlt, faCommentDots, faCog } from '@fortawesome/free-solid-svg-icons'
+import { faThLarge, faProjectDiagram, faCaretRight, faFileCode, faSignOutAlt, faCommentDots, faCog, faTimes } from '@fortawesome/free-solid-svg-icons'
 
 import { useSocketContext } from './context/socketContext';
 
 import { setTeam, addInviteRequest } from "./features/team/teamSlice";
 
+import Modal from './components/organisms/Modal';
 import Nav from './components/organisms/Nav';
 
 import Dashboard from './pages/Dashboard';
@@ -18,8 +19,9 @@ import Project from './pages/Project';
 import Messages from './pages/Messages';
 import Settings from './pages/Settings';
 import Join from './pages/Join';
+import ManageProjects from './pages/ManageProjects';
 
-library.add(faThLarge, faProjectDiagram, faCaretRight, faFileCode, faSignOutAlt, faCommentDots, faCog);
+library.add(faThLarge, faProjectDiagram, faCaretRight, faFileCode, faSignOutAlt, faCommentDots, faCog, faTimes);
 
 const getUserTeamQuery = gql`
 	query getUserTeam {
@@ -28,7 +30,9 @@ const getUserTeamQuery = gql`
 			name
 			inviteLink
 			projects {
+				id
 				name
+				tasksCounter
 			}
 			users {
 				name
@@ -102,12 +106,14 @@ function App() {
 
 	return (
 		<Container>
+			<Modal />
 			<Nav />
 			<Wrapper>
 				<Routes>
 					<Route path="/" element={<Dashboard />} />
 					<Route path="/join/:id" element={<Join />} />
 					<Route path="/project/:id" element={<Project />} />
+					<Route path="/manage-projects" element={<ManageProjects />} />
 					<Route path="/messages" element={<Messages />} />
 					<Route path="/settings" element={<Settings />} />
 				</Routes>
