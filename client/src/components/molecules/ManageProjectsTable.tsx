@@ -37,14 +37,14 @@ const ManageProjectsTable = ({ projects }: IManagerProjectsTable) => {
             <Thead>
                 <Tr>
                     <Th>Name</Th>
-                    <Th>Tasks</Th>
+                    <Th>Kanbans</Th>
                     <Th></Th>
                 </Tr>
             </Thead>
             <Tbody>
                 {
                     projects.map(project => {
-                        return <ManageProjectsItem key={project.id} id={project.id} name={project.name} tasksCounter={project.tasksCounter} />
+                        return <ManageProjectsItem buttonsType="table" key={project.id} id={project.id} name={project.name} tasksCounter={project.kanbans.length} />
                     })
                 }
             </Tbody>

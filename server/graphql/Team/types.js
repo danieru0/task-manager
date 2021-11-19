@@ -6,6 +6,7 @@ const types = `
     }
 
     type Kanban {
+        id: String!
         name: String!
         tasks: [Task]
     }

@@ -33,6 +33,13 @@ const getUserTeamQuery = gql`
 				id
 				name
 				tasksCounter
+				kanbans {
+					id
+					name
+					tasks {
+						name
+					}
+				}
 			}
 			users {
 				name
@@ -113,6 +120,7 @@ function App() {
 					<Route path="/" element={<Dashboard />} />
 					<Route path="/join/:id" element={<Join />} />
 					<Route path="/project/:id" element={<Project />} />
+					<Route path="/manage-projects/:id" element={<ManageProjects />} />
 					<Route path="/manage-projects" element={<ManageProjects />} />
 					<Route path="/messages" element={<Messages />} />
 					<Route path="/settings" element={<Settings />} />

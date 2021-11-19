@@ -9,7 +9,7 @@ import Icon from '../atoms/Icon';
 interface INavProjects {
     projects: ProjectInterface[];
     active: Boolean;
-    clickedProjectId: string;
+    clickedProjectId: string | undefined;
 }
 
 interface ProjectsButtonProps {

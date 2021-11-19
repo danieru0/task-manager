@@ -1,22 +1,29 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 
-export type ModalTypes = 'new-project' | '';
+export type ModalTypes = 'new-project' | 'new-kanban' | '';
 
 interface ModalState {
     modalName: ModalTypes;
+    variables?: {
+        projectId?: string;
+    }
 }
 
 const initialState: ModalState = {
-    modalName: ''
+    modalName: '',
+    variables: {
+        projectId: ''
+    }
 }
 
 export const modalSlice = createSlice({
     name: 'modal',
     initialState,
     reducers: {
-        setModal: (state, action: PayloadAction<ModalTypes>) => {
-            state.modalName = action.payload;
+        setModal: (state, action: PayloadAction<ModalState>) => {
+            state.modalName = action.payload.modalName;
+            state.variables = action.payload.variables;
         }
     }
 })

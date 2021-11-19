@@ -1,11 +1,15 @@
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 
 import Button from '../atoms/Button';
+
+type buttonsType = 'table' | 'edit';
 
 interface IManageProjectsItem {
     id: string;
     tasksCounter: number;
     name: string;
+    buttonsType: buttonsType;
 }
 
 const Tr = styled.tr`
@@ -30,15 +34,27 @@ const StyledButton = styled(Button)`
     margin: 0px 5px;
 `
 
-const ManageProjectsItem = ({ name, tasksCounter, id }: IManageProjectsItem) => {
+const ManageProjectsItem = ({ name, tasksCounter, id, buttonsType }: IManageProjectsItem) => {
+    const navigate = useNavigate();
+
     return (
         <Tr>
             <Td>{name}</Td>
             <Td>{tasksCounter}</Td>
             <ButtonsTd>
                 <ButtonsWrapper>
-                    <StyledButton onClick={() => alert('edit')} text="edit" />
-                    <StyledButton onClick={() => alert('remove')} text="remove" />
+                    {
+                        buttonsType === 'table' ? (
+                            <>
+                                <StyledButton onClick={() => navigate(`${id}`)} text="edit" />
+                                <StyledButton onClick={() => alert('remove')} text="remove" />
+                            </>
+                        ) : (
+                            <>
+                                <StyledButton size="small" onClick={() => alert('remove')} text="remove" />
+                            </>
+                        )
+                    }
                 </ButtonsWrapper>
             </ButtonsTd>
         </Tr>

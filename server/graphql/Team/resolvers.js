@@ -145,6 +145,9 @@ const mutations = {
         if (!team) throw new ValidationError('There is no team with this id!');
         if (team.author.id !== userAuth.decoded.sub) throw new ValidationError('You are not author of this team!'); 
 
+        const isProjectAlreadyExists = team.projects.find(project => project.name === name);
+        if (isProjectAlreadyExists) throw new ValidationError('Project with this name already exists!');
+
         const projectId = mongoose.Types.ObjectId();
 
         const newProject = {
@@ -160,6 +163,37 @@ const mutations = {
         await team.save();
 
         return newProject
+    },
+    createKanban: async (_, { name, teamId, projectId }, { user: userAuth }) => {
+        if (!userAuth) throw new AuthenticationError('You have to be logged in!');
+
+        const user = await User.findOne({id: userAuth.decoded.sub});
+        if (!user) throw new ValidationError('User dont exists');
+        
+        const team = await Team.findOne({ id: teamId }).populate('author');
+        if (!team) throw new ValidationError('There is no team with this id!');
+        if (team.author.id !== userAuth.decoded.sub) throw new ValidationError('You are not author of this team!');
+
+        const project = team.projects.find(project => project.id === projectId);
+        if (!project) throw new ValidationError('There is no project with this id!');
+        
+        const isKanbanAlreadyExists = project.kanbans.find(kanban => kanban.name === name);
+        if (isKanbanAlreadyExists) throw new ValidationError('Kanban with this name already exists!');
+
+        const kanbanId = mongoose.Types.ObjectId();
+
+        const newKanban = {
+            _id: kanbanId,
+            id: kanbanId,
+            name,
+            tasks: []
+        }
+
+        project.kanbans.push(newKanban);
+
+        await team.save();
+
+        return newKanban;
     }
 }
 

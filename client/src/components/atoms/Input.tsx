@@ -3,12 +3,20 @@ import styled from "styled-components";
 interface IInput {
     placeholder: string;
     value: string;
+    label?: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+    onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
     [key: string]: any;
 }
 
-const Container = styled.input`
+const Container = styled.label`
+    display: flex;
+    flex-direction: column;
+    font-size: 20px;
+    font-weight: bold;
+`
+
+const InputElement = styled.input`
     border: 2px solid ${({theme}) => theme.secondary};
     outline: none;
     width: 250px;
@@ -18,9 +26,14 @@ const Container = styled.input`
     padding: 0px 5px;
 `
 
-const Input = ({ placeholder, value, onChange, onKeyDown, ...props }: IInput) => {
+const Input = ({ placeholder, value, label, onChange, onKeyDown, ...props }: IInput) => {
+    if (!label) return <InputElement value={value} placeholder={placeholder} onKeyDown={onKeyDown} onChange={onChange} {...props} />
+
     return (
-        <Container value={value} placeholder={placeholder} onKeyDown={onKeyDown} onChange={onChange} {...props} />
+        <Container>
+            {label}
+            <InputElement value={value} placeholder={placeholder} onKeyDown={onKeyDown} onChange={onChange} {...props} />
+        </Container>
     );
 };
 

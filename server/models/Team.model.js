@@ -31,6 +31,10 @@ ProjectModel.add({
         required: true
     },
     kanbans: [{
+        id: {
+            type: String,
+            required: true
+        },
         name: {
             type: String,
             required: true
