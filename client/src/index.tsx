@@ -10,6 +10,8 @@ import { HashRouter } from 'react-router-dom';
 import { ThemeProvider } from 'styled-components';
 import { theme } from './theme/theme';
 import GlobalStyles from './theme/GlobalStyles';
+import { HTML5Backend } from 'react-dnd-html5-backend'
+import { DndProvider } from 'react-dnd'
 
 import ApolloProviderWithAuth0 from './utils/ApolloProviderWithAuth0';
 import SocketContextProvider from './utils/SocketContextProvider';
@@ -30,7 +32,9 @@ ReactDOM.render(
 						<ThemeProvider theme={theme}>
 							<GlobalStyles />
 							<HashRouter>
-								<App />
+								<DndProvider backend={HTML5Backend}>
+									<App />
+								</DndProvider>
 							</HashRouter>
 						</ThemeProvider>
 					</Provider>

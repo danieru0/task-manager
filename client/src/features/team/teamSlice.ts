@@ -1,10 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 
+export interface TaskInterface {
+    id: string;
+    name: string;
+    description: string;
+    author: UserInterface;
+    tag: string;
+}
+
 export interface KanbanInterface {
     id: string;
     name: string;
-    tasks: []
+    tasks: TaskInterface[]
 }
 
 export interface ProjectInterface {
@@ -70,11 +78,26 @@ export const teamSlice = createSlice({
                     state.team.projects[projectIndex].kanbans = [...state.team.projects[projectIndex].kanbans, kanban];
                 }
             }
+        },
+        addTask: (state, action: PayloadAction<{projectId: string, kanbanId: string, task: TaskInterface}>) => {
+            const { projectId, kanbanId, task } = action.payload;
+
+            if (state.team) {
+                const projectIndex = state.team.projects.findIndex(project => project.id === projectId);
+
+                if (projectIndex !== -1) {
+                    const kanbanIndex = state.team.projects[projectIndex].kanbans.findIndex(kanban => kanban.id === kanbanId);
+
+                    if (kanbanIndex !== -1) {
+                        state.team.projects[projectIndex].kanbans[kanbanIndex].tasks = [...state.team.projects[projectIndex].kanbans[kanbanIndex].tasks, task];
+                    }
+                } 
+            }
         }
     }
 })
 
-export const { setTeam, removeInviteRequest, addInviteRequest, addProject, addKanban } = teamSlice.actions;
+export const { setTeam, removeInviteRequest, addInviteRequest, addProject, addKanban, addTask } = teamSlice.actions;
 
 export const selectTeam = (state: RootState) => state.team;
 

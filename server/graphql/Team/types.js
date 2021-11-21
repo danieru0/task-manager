@@ -1,8 +1,10 @@
 const types = `
     type Task {
+        id: String!
         name: String!
         author: User!
         description: String!
+        tag: String!
     }
 
     type Kanban {

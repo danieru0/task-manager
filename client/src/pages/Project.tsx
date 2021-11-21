@@ -1,8 +1,57 @@
+import { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import { useParams, Navigate } from 'react-router-dom';
+import { useAppSelector } from '../app/hooks';
+
+import { selectTeam, ProjectInterface } from '../features/team/teamSlice';
+
+import Kanban from '../components/organisms/Kanban';
+
+const Container = styled.div`
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 0px 50px;
+`
+
+const Header = styled.div`
+    width: 100%;
+    height: 150px;
+    display: flex;
+    align-items: center;
+`
+
+const PageTitle = styled.span`
+    color: ${({theme}) => theme.secondary};
+    font-size: 32px;
+    font-weight: bold;
+`
+
 const Project = () => {
+    const { id } = useParams();
+    const teamSelector = useAppSelector(selectTeam);
+    const [project, setProject] = useState<ProjectInterface | undefined | null>(null)
+
+    useEffect(() => {
+        if (teamSelector.team) {
+            const selectedProject = teamSelector.team.projects.find(project => project.id === id);
+
+            setProject(selectedProject);
+        }
+    }, [id, teamSelector.team]);
+
+    if (project === null) return <span>loading</span>
+
+    if (project === undefined) return <Navigate to="/" />
+
     return (
-        <div>
-            projec
-        </div>
+        <Container>
+            <Header>
+                <PageTitle>{project.name}</PageTitle>
+            </Header>
+            <Kanban project={project} />
+        </Container>
     );
 };
 

@@ -2,10 +2,11 @@ import styled from 'styled-components';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 
 import { selectModal, setModal, ModalTypes } from '../../features/modal/modalSlice';
-import { selectTeam, ProjectInterface, addProject, addKanban, KanbanInterface } from '../../features/team/teamSlice';
+import { selectTeam, ProjectInterface, addProject, addKanban, addTask, KanbanInterface, TaskInterface } from '../../features/team/teamSlice';
 
 import NewProject from '../molecules/Modals/NewProject';
 import NewKanban from '../molecules/Modals/NewKanban';
+import NewTask from '../molecules/Modals/NewTask';
 
 const Container = styled.div`
     width: 100%;
@@ -44,12 +45,23 @@ const Modal = () => {
         handleCloseClick();
     }
 
+    const handleNewTaskAdd = (data: TaskInterface, projectId: string | undefined, kanbanId: string | undefined) => {
+        dispatch(addTask({
+            projectId: projectId as string,
+            kanbanId: kanbanId as string,
+            task: data
+        }))
+        handleCloseClick();
+    }
+
     const HandleModalSwitch = (name: ModalTypes) => {
         switch(name) {
             case 'new-project':
                 return <NewProject onSuccessProjectAdd={handleNewProjectAdd} teamId={teamSelector.team?.id} onCloseClick={handleCloseClick} />
             case 'new-kanban':
                 return <NewKanban onSuccessKanbanAdd={handleNewKanbanAdd} projectId={modalSelector.variables?.projectId} teamId={teamSelector.team?.id} onCloseClick={handleCloseClick} />    
+            case 'new-task':
+                return <NewTask onSuccessTaskAdd={handleNewTaskAdd} teamId={teamSelector.team?.id} projectId={modalSelector.variables?.projectId} kanbanId={modalSelector.variables?.kanbanId} onCloseClick={handleCloseClick} />
             default: throw new Error('Wrong modal type');
         }
     }

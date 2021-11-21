@@ -37,7 +37,13 @@ const getUserTeamQuery = gql`
 					id
 					name
 					tasks {
+						id
 						name
+						author {
+							nickname
+						}
+						description
+						tag
 					}
 				}
 			}

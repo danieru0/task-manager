@@ -2,6 +2,10 @@ const  { Schema, model } = require('mongoose');
 
 const TaskModel = new Schema();
 TaskModel.add({
+    id: {
+        type: String,
+        required: true
+    },
     name: {
         type: String,
         required: true
@@ -11,6 +15,10 @@ TaskModel.add({
         ref: 'user'
     },
     description: {
+        type: String,
+        required: true
+    },
+    tag: {
         type: String,
         required: true
     }

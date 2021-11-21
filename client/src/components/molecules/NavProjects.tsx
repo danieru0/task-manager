@@ -116,7 +116,7 @@ const ProjectsWrapper = styled.div`
 
 const NavProjects = ({ projects, active, clickedProjectId }: INavProjects) => {
     const [ projectsClicked, setProjectsClicked ] = useState(false);
-    const [ projectsHeight, setProjectsHeight ] = useState(0); //eslint-disable-line
+    const [ projectsHeight, setProjectsHeight ] = useState(0);
 
     const handleProjectsBtnClick = () => {
         setProjectsClicked(prev => !prev);
@@ -136,12 +136,12 @@ const NavProjects = ({ projects, active, clickedProjectId }: INavProjects) => {
 
     return (
         <Container>
-            <ProjectsButton projectsclicked={projectsClicked ? 'true' : undefined} onClick={handleProjectsBtnClick}>
+            <ProjectsButton projectsclicked={projectsClicked || active ? 'true' : undefined} onClick={handleProjectsBtnClick}>
                 <StyledMainIcon icon="project-diagram" />
                 <Text>Projects</Text>
-                <StyledArrowIcon projectsclicked={projectsClicked ? 'true' : undefined} icon="caret-right" />
+                <StyledArrowIcon projectsclicked={projectsClicked || active ? 'true' : undefined} icon="caret-right" />
             </ProjectsButton>
-            <ProjectsMenu projectsHeight={projectsHeight} projectsclicked={projectsClicked ? 'true' : undefined}>
+            <ProjectsMenu projectsHeight={projectsHeight} projectsclicked={projectsClicked || active ? 'true' : undefined}>
                 <ProjectsLine />
                 <ProjectsWrapper>
                     {
