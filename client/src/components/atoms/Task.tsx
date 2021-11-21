@@ -1,13 +1,19 @@
-import styled from 'styled-components';
+import { useEffect } from 'react';
+import styled, { css } from 'styled-components';
 import { useDrag } from 'react-dnd'
 
 import { TaskInterface } from '../../features/team/teamSlice';
 
 interface ITask extends TaskInterface {
     kanbanId: string;
+    onDrag: (isDragging: boolean, kanbanId: string) => void;
 }
 
-const Container = styled.div`
+interface ContainerProps {
+    isdragging: string;
+}
+
+const Container = styled.div<ContainerProps>`
     width: 100%;
     height: 200px;
     display: flex;
@@ -19,6 +25,10 @@ const Container = styled.div`
         border-top: none;
         padding-top: 0px;
     }
+
+    ${({ theme, isdragging }) => isdragging && css`
+        background: ${({theme}) => theme.primaryLighter};
+    `}
 `
 
 const Title = styled.span`
@@ -43,8 +53,8 @@ const Tag = styled.span`
     
 `
 
-const Task = ({ id, name, description, author, tag, kanbanId }: ITask) => {
-    const [, drag ] = useDrag(() => ({
+const Task = ({ id, name, description, author, tag, kanbanId, onDrag }: ITask) => {
+    const [ { isDragging }, drag ] = useDrag(() => ({
         type: 'Task',
         item: {id, kanbanId},
         collect: (monitor) => ({
@@ -52,8 +62,12 @@ const Task = ({ id, name, description, author, tag, kanbanId }: ITask) => {
         })
     }))
 
+    useEffect(() => {
+        onDrag(isDragging, kanbanId);
+    }, [isDragging]); //eslint-disable-line
+
     return (
-        <Container ref={drag}>
+        <Container isdragging={isDragging ? 'true' : ''} ref={drag}>
             <Title>{name}</Title>
             <Author>{author.nickname}</Author>
             <Description>{description}</Description>

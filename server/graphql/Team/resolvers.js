@@ -229,6 +229,37 @@ const mutations = {
         await team.save();
 
         return newTask;
+    },
+    moveTask: async (_, { taskId, teamId, projectId, kanbanIdFrom, kanbanIdTo }, { user: userAuth }) => {
+        if (!userAuth) throw new AuthenticationError('You have to be logged in!');
+
+        const user = await User.findOne({id: userAuth.decoded.sub});
+        if (!user) throw new ValidationError('User dont exists');
+
+        const team = await Team.findOne({ id: teamId }).populate('users').populate('projects.kanbans.tasks.author');
+        if (!team) throw new ValidationError('There is no team with this id!');
+
+        const isUserInTeam = team.users.find(user => user.id === userAuth.decoded.sub);
+        if (!isUserInTeam) throw new ValidationError('You are not in this team!');
+
+        const project = team.projects.find(project => project.id === projectId);
+        if (!project) throw new ValidationError('There is no project with this id!');
+
+        const kanbanFrom = project.kanbans.find(kanban => kanban.id === kanbanIdFrom);
+        if (!kanbanFrom) throw new ValidationError('There is no kanbanFrom with this id!');
+
+        const task = kanbanFrom.tasks.find(task => task.id === taskId);
+        if (!task) throw new ValidationError('There is no task with this id!');
+
+        const kanbanTo = project.kanbans.find(kanban => kanban.id === kanbanIdTo);
+        if (!kanbanTo) throw new ValidationError('There is no kanbanTo with this id!');
+
+        kanbanFrom.tasks.pull({ _id: taskId });
+        kanbanTo.tasks.push(task.toJSON());
+
+        await team.save();
+
+        return task;
     }
 }
 

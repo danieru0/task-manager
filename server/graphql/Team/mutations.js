@@ -6,6 +6,7 @@ const mutations = `
     createProject (name: String!, teamId: String!): Project
     createKanban (name: String!, teamId: String!, projectId: String!): Kanban
     createTask (name: String!, description: String!, tag: String! teamId: String!, projectId: String!, kanbanId: String!): Task
+    moveTask (taskId: String!, teamId: String!, projectId: String!, kanbanIdFrom: String!, kanbanIdTo: String!): Task
 `
 
 module.exports = mutations;
