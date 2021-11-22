@@ -31,7 +31,10 @@ const queries = {
 
         if (socketUser) socketUser.databaseId = userAuth.decoded.sub;
         
-        if (user.team) return user.team;
+        if (user.team) {
+            socketUser.socket.join(user.team.id);
+            return user.team;
+        }
 
         return {};
     }

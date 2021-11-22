@@ -230,7 +230,7 @@ const mutations = {
 
         return newTask;
     },
-    moveTask: async (_, { taskId, teamId, projectId, kanbanIdFrom, kanbanIdTo }, { user: userAuth }) => {
+    moveTask: async (_, { taskId, teamId, projectId, kanbanIdFrom, kanbanIdTo }, { user: userAuth, io }) => {
         if (!userAuth) throw new AuthenticationError('You have to be logged in!');
 
         const user = await User.findOne({id: userAuth.decoded.sub});
@@ -258,6 +258,8 @@ const mutations = {
         kanbanTo.tasks.push(task.toJSON());
 
         await team.save();
+
+        io.to(teamId).emit('sendMoveTaskSocket', {task, projectId, kanbanIdFrom, kanbanIdTo,});
 
         return task;
     }

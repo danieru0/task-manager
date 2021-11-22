@@ -9,7 +9,7 @@ import { faThLarge, faProjectDiagram, faCaretRight, faFileCode, faSignOutAlt, fa
 
 import { useSocketContext } from './context/socketContext';
 
-import { setTeam, addInviteRequest } from "./features/team/teamSlice";
+import { setTeam, addInviteRequest, moveTask, MoveTaskInterface } from "./features/team/teamSlice";
 
 import Modal from './components/organisms/Modal';
 import Nav from './components/organisms/Nav';
@@ -99,10 +99,14 @@ function App() {
 
 			socket.on('sendJoinTeamRequestSocket', userData => {
 				dispatch(addInviteRequest(userData));
-			})
+			});
 
 			socket.on('sendAcceptTeamRequestSocket', () => {
 				getTeam();
+			});
+
+			socket.on('sendMoveTaskSocket', (socketData: MoveTaskInterface) => {
+				dispatch(moveTask(socketData));
 			})
 		}
 
@@ -111,6 +115,7 @@ function App() {
 				socket.off('sendRejectTeamRequestSocket');
 				socket.off('sendJoinTeamRequestSocket');
 				socket.off('sendAcceptTeamRequestSocket');
+				socket.off('sendMoveTaskSocket');
 			}
 		}
 	}, [socket, dispatch, getTeam]);

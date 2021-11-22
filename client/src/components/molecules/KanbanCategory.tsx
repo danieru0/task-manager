@@ -6,7 +6,7 @@ import { gql, useMutation } from "@apollo/client";
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 
 import { setModal } from '../../features/modal/modalSlice';
-import { selectTeam, moveTask, TaskInterface } from '../../features/team/teamSlice';
+import { selectTeam, TaskInterface } from '../../features/team/teamSlice';
 
 import Button from '../atoms/Button';
 import Task from '../atoms/Task';
@@ -96,7 +96,7 @@ const KanbanCategory = ({ kanbanId, projectId, name, tasks, active, isAlreadyLoa
         id: '',
         kanbanId: ''
     })
-    const [ moveTaskMut, { data, loading } ] = useMutation(moveTaskMutation);
+    const [ moveTask, { loading } ] = useMutation(moveTaskMutation);
     const [ { isOver }, drop] = useDrop(() => ({
         accept: 'Task',
         collect: (monitor) => ({
@@ -111,7 +111,7 @@ const KanbanCategory = ({ kanbanId, projectId, name, tasks, active, isAlreadyLoa
         },
         drop: (item: DroppedTaskInterface) => {
             if (!isAlreadyLoading && item.kanbanId !== kanbanId) {
-                moveTaskMut({
+                moveTask({
                     variables: {
                         taskId: item.id,
                         teamId: teamSelector.team!.id,
@@ -127,17 +127,6 @@ const KanbanCategory = ({ kanbanId, projectId, name, tasks, active, isAlreadyLoa
     useEffect(() => {
         handleTaskMoveLoading(loading);
     }, [loading]); //eslint-disable-line
-
-    useEffect(() => {
-        if (data) {
-            dispatch(moveTask({
-                projectId,
-                kanbanIdFrom: droppedTask.kanbanId,
-                kanbanIdTo: kanbanId,
-                task: data.moveTask
-            }));
-        }
-    }, [data, dispatch]); //eslint-disable-line
 
     const handleNewTaskClick = () => {
         dispatch(setModal({

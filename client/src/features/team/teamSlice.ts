@@ -1,6 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 
+export interface MoveTaskInterface {
+    projectId: string, 
+    kanbanIdFrom: string, 
+    kanbanIdTo: string, 
+    task: TaskInterface
+}
+
 export interface TaskInterface {
     id: string;
     name: string;
