@@ -11,7 +11,7 @@ interface IKanban {
 
 const Container = styled.div`
     width: 100%;
-    height: 100%;
+    height: calc(100% - 150px);
     display: flex;
     justify-content: space-around;
     position: relative;

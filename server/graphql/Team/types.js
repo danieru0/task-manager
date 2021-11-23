@@ -1,10 +1,17 @@
 const types = `
+    type Comment {
+        id: String!
+        author: User!
+        text: String!
+    }
+
     type Task {
         id: String!
         name: String!
         author: User!
         description: String!
         tag: String!
+        comments: [Comment]
     }
 
     type Kanban {

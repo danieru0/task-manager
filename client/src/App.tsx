@@ -5,7 +5,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { gql, useLazyQuery } from "@apollo/client";
 import { useAppDispatch } from './app/hooks';
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faThLarge, faProjectDiagram, faCaretRight, faFileCode, faSignOutAlt, faCommentDots, faCog, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faThLarge, faProjectDiagram, faCaretRight, faFileCode, faSignOutAlt, faCommentDots, faCog, faTimes, faComment } from '@fortawesome/free-solid-svg-icons'
 
 import { useSocketContext } from './context/socketContext';
 
@@ -21,7 +21,7 @@ import Settings from './pages/Settings';
 import Join from './pages/Join';
 import ManageProjects from './pages/ManageProjects';
 
-library.add(faThLarge, faProjectDiagram, faCaretRight, faFileCode, faSignOutAlt, faCommentDots, faCog, faTimes);
+library.add(faThLarge, faProjectDiagram, faCaretRight, faFileCode, faSignOutAlt, faCommentDots, faCog, faTimes, faComment);
 
 const getUserTeamQuery = gql`
 	query getUserTeam {
@@ -41,9 +41,18 @@ const getUserTeamQuery = gql`
 						name
 						author {
 							nickname
+							picture
 						}
 						description
 						tag
+						comments {
+							id
+							author {
+								picture
+								nickname
+							}
+							text
+						}
 					}
 				}
 			}
@@ -130,6 +139,7 @@ function App() {
 				<Routes>
 					<Route path="/" element={<Dashboard />} />
 					<Route path="/join/:id" element={<Join />} />
+					<Route path="/project/:id/:kanbanId/:taskId" element={<Project />} />
 					<Route path="/project/:id" element={<Project />} />
 					<Route path="/manage-projects/:id" element={<ManageProjects />} />
 					<Route path="/manage-projects" element={<ManageProjects />} />

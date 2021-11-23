@@ -1,8 +1,11 @@
 import { useEffect } from 'react';
 import styled, { css } from 'styled-components';
 import { useDrag } from 'react-dnd'
+import { Link } from 'react-router-dom';
 
 import { TaskInterface } from '../../features/team/teamSlice';
+
+import Icon from './Icon';
 
 interface ITask extends TaskInterface {
     kanbanId: string;
@@ -18,8 +21,8 @@ const Container = styled.div<ContainerProps>`
     height: 200px;
     display: flex;
     flex-direction: column;
-    border-top: 1px solid black;
     padding-top: 30px;
+    flex-shrink: 0;
 
     &:nth-of-type(1) {
         border-top: none;
@@ -27,13 +30,13 @@ const Container = styled.div<ContainerProps>`
     }
 
     ${({ theme, isdragging }) => isdragging && css`
-        background: ${({theme}) => theme.primaryLighter};
+        background: ${theme.primaryLighter};
     `}
 `
 
-const Title = styled.span`
+const Title = styled(Link)`
     font-size: 20px;
-    font-weight: bol;d
+    font-weight: bold;
 `
 
 const Author = styled.span`
@@ -43,17 +46,35 @@ const Author = styled.span`
 
 const Description = styled.span`
     font-size: 16px;
+    margin-top: 20px;
 `
 
 const Footer = styled.div`
     display: flex;
+    margin-top: auto;
+    justify-content: space-between;
+    padding-bottom: 20px;
 `
 
 const Tag = styled.span`
-    
+    color: ${({theme}) => theme.tag};
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 16px;
 `
 
-const Task = ({ id, name, description, author, tag, kanbanId, onDrag }: ITask) => {
+const CommentsNumber = styled.div`
+    color: ${({theme}) => theme.comments};
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+`
+
+const CommentsText = styled.span`
+    margin-left: 10px;
+`
+
+const Task = ({ id, name, description, author, tag, kanbanId, comments, onDrag }: ITask) => {
     const [ { isDragging }, drag ] = useDrag(() => ({
         type: 'Task',
         item: {id, kanbanId},
@@ -68,11 +89,15 @@ const Task = ({ id, name, description, author, tag, kanbanId, onDrag }: ITask) =
 
     return (
         <Container isdragging={isDragging ? 'true' : ''} ref={drag}>
-            <Title>{name}</Title>
+            <Title to={`${kanbanId}/${id}`}>{name}</Title>
             <Author>{author.nickname}</Author>
             <Description>{description}</Description>
             <Footer>
                 <Tag>{tag}</Tag>
+                <CommentsNumber>
+                    <Icon icon="comment" />
+                    <CommentsText>{comments.length}</CommentsText>
+                </CommentsNumber>
             </Footer>
         </Container>
     );

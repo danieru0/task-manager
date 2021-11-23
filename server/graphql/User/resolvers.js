@@ -25,6 +25,11 @@ const queries = {
             populate: {
                 path: 'projects.kanbans.tasks.author'
             }
+        }).populate({
+            path: 'team',
+            populate: {
+                path: 'projects.kanbans.tasks.comments.author'
+            }
         })
 
         if (!user) throw new ValidationError('User dont exists');

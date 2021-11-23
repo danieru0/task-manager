@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-export type IconTypes = 'th-large' | 'project-diagram' | 'caret-right' | 'file-code'| 'sign-out-alt' | 'comment-dots' | 'cog' | 'times';
+export type IconTypes = 'th-large' | 'project-diagram' | 'caret-right' | 'file-code'| 'sign-out-alt' | 'comment-dots' | 'cog' | 'times' | 'comment';
 
 interface IIcon {
     icon: IconTypes;

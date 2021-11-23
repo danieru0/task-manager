@@ -72,12 +72,12 @@ const TasksNumberText = styled.span`
 
 const TasksContainer = styled.div<TaskContainerProps>`
     width: 100%;
+    height: calc(100% - 150px - 30px);
     display: flex;
     flex-direction: column;
-    overflow-x: auto;
-    border-top: 3px solid black;
+    overflow-y: auto;
+    border-top: 3px solid ${({theme}) => theme.borderDark};
     padding-top: 30px;
-    height: 100%;
 
     ${({ theme, active }) => active && css`
         background: ${({theme}) => theme.primaryLighter};
@@ -87,6 +87,15 @@ const TasksContainer = styled.div<TaskContainerProps>`
 const DummyTask = styled.div`
     width: 100%;
     height: 200px;
+    flex-shrink: 0;
+`
+
+const Line = styled.hr`
+    width: 100%;
+    height: 2px;
+    background: ${({theme}) => theme.borderLight};
+    margin: 0;
+    flex-shrink: 0;
 `
 
 const KanbanCategory = ({ kanbanId, projectId, name, tasks, active, isAlreadyLoading, onDrag, handleTaskMoveLoading }: IKanbanCategory) => {
@@ -148,8 +157,13 @@ const KanbanCategory = ({ kanbanId, projectId, name, tasks, active, isAlreadyLoa
             <TasksContainer active={active ? 'true' : ''} ref={drop}>
                 { isOver && droppedTask.kanbanId !== kanbanId && <DummyTask />}
                 {
-                    [...tasks].reverse().map(task => {
-                        return <Task onDrag={onDrag} key={task.id} kanbanId={kanbanId} name={task.name} description={task.description} tag={task.tag} id={task.id} author={task.author} />
+                    [...tasks].reverse().map((task, index) => {
+                        return (
+                            <>
+                                <Task comments={task.comments} onDrag={onDrag} key={task.id} kanbanId={kanbanId} name={task.name} description={task.description} tag={task.tag} id={task.id} author={task.author} />
+                                {index !== tasks.length - 1 && <Line key={index} />}
+                            </>
+                        )
                     })
                 }
             </TasksContainer>

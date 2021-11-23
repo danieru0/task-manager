@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, current } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 
 export interface MoveTaskInterface {
@@ -8,12 +8,19 @@ export interface MoveTaskInterface {
     task: TaskInterface
 }
 
+export interface CommentInterface {
+    id: string,
+    author: UserInterface,
+    text: string;
+}
+
 export interface TaskInterface {
     id: string;
     name: string;
     description: string;
     author: UserInterface;
     tag: string;
+    comments: CommentInterface[]
 }
 
 export interface KanbanInterface {
@@ -46,7 +53,7 @@ interface TeamInterface {
 }
 
 export interface TeamState {
-    team: TeamInterface | undefined
+    team: TeamInterface | undefined;
 }
 
 const initialState: TeamState = {
@@ -101,7 +108,7 @@ export const teamSlice = createSlice({
                 } 
             }
         },
-        moveTask: (state, action: PayloadAction<{projectId: string, kanbanIdFrom: string, kanbanIdTo: string, task: TaskInterface}>) => {
+        moveTask: (state, action: PayloadAction<MoveTaskInterface>) => {
             const { projectId, kanbanIdFrom, kanbanIdTo, task } = action.payload;
 
             if (state.team) {
@@ -118,14 +125,32 @@ export const teamSlice = createSlice({
 
                 const kanbanIndexTo = state.team.projects[projectIndex].kanbans.findIndex(kanban => kanban.id === kanbanIdTo);
                 if (kanbanIndexTo === -1) throw new Error('Kanban with this id dont exists!');
-                
+
                 state.team.projects[projectIndex].kanbans[kanbanIndexTo].tasks.push(task);
+            }
+        },
+        addComment: (state, action: PayloadAction<{projectId: string, kanbanId: string, taskId: string, comment: CommentInterface}>) => {
+            const { projectId, kanbanId, taskId, comment } = action.payload;
+
+            if (state.team) {
+                const projectIndex = state.team.projects.findIndex(project => project.id === projectId);
+                if (projectIndex === -1) throw new Error('Project with this id dont exists!');
+
+                const kanbanIndex = state.team.projects[projectIndex].kanbans.findIndex(kanban => kanban.id === kanbanId);
+                if (kanbanIndex === -1) throw new Error('Kanban with this id dont exists!');
+
+                const taskIndex = state.team.projects[projectIndex].kanbans[kanbanIndex].tasks.findIndex(task => task.id === taskId);
+                if (taskIndex === -1) throw new Error('Task with this id dont exists!');
+
+                console.log(current(state.team.projects[projectIndex].kanbans[kanbanIndex].tasks[taskIndex]));
+
+                state.team.projects[projectIndex].kanbans[kanbanIndex].tasks[taskIndex].comments.push(comment);
             }
         }
     }
 })
 
-export const { setTeam, removeInviteRequest, addInviteRequest, addProject, addKanban, addTask, moveTask } = teamSlice.actions;
+export const { setTeam, removeInviteRequest, addInviteRequest, addProject, addKanban, addTask, moveTask, addComment } = teamSlice.actions;
 
 export const selectTeam = (state: RootState) => state.team;
 

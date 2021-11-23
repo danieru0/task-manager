@@ -21,7 +21,21 @@ TaskModel.add({
     tag: {
         type: String,
         required: true
-    }
+    },
+    comments: [{
+        id: {
+            type: String,
+            required: true
+        },
+        author: {
+            type: Schema.Types.ObjectId,
+            ref: 'user'
+        },
+        text: {
+            type: String,
+            required: true
+        }
+    }]
 })
 
 const ProjectModel = new Schema();

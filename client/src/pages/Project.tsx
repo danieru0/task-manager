@@ -6,6 +6,7 @@ import { useAppSelector } from '../app/hooks';
 import { selectTeam, ProjectInterface } from '../features/team/teamSlice';
 
 import Kanban from '../components/organisms/Kanban';
+import TaskDetail from '../components/organisms/TaskDetail';
 
 const Container = styled.div`
     width: 100%;
@@ -29,9 +30,9 @@ const PageTitle = styled.span`
 `
 
 const Project = () => {
-    const { id } = useParams();
+    const { id, kanbanId, taskId } = useParams();
     const teamSelector = useAppSelector(selectTeam);
-    const [project, setProject] = useState<ProjectInterface | undefined | null>(null)
+    const [project, setProject] = useState<ProjectInterface | undefined | null>(null);
 
     useEffect(() => {
         if (teamSelector.team) {
@@ -50,7 +51,9 @@ const Project = () => {
             <Header>
                 <PageTitle>{project.name}</PageTitle>
             </Header>
-            <Kanban project={project} />
+            {
+                taskId ? <TaskDetail teamId={teamSelector.team!.id} project={project} kanbanId={kanbanId!} taskId={taskId!} /> : <Kanban project={project} />
+            }
         </Container>
     );
 };
