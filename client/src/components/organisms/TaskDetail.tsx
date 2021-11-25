@@ -160,9 +160,9 @@ const TaskDetail = ({ taskId, kanbanId, project, teamId }: ITaskDetail) => {
                 </Comment>
             </CommentWrapper>
             <CommentsWrapper>
-                <CommentsSectionName>{`${task.comments.length} comments`}</CommentsSectionName>
+                <CommentsSectionName>{`${task.comments ? task.comments.length : 0} comments`}</CommentsSectionName>
                 {
-                    task.comments.map(comment => {
+                    task.comments && task.comments.map(comment => {
                         return <CommentElement key={comment.id} avatar={comment.author.picture} comment={comment.text} name={comment.author.nickname} />
                     })
                 }

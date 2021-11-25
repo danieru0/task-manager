@@ -12,29 +12,30 @@ const types = `
         description: String!
         tag: String!
         comments: [Comment]
+        workingUsers: [User]!
     }
 
     type Kanban {
         id: String!
         name: String!
-        tasks: [Task]
+        tasks: [Task]!
     }
 
     type Project {
         id: String!
         name: String!
         tasksCounter: Int!
-        kanbans: [Kanban]
+        kanbans: [Kanban]!
     }
 
     type Team {
         id: String!
         name: String!
-        users: [User]
-        projects: [Project]
+        users: [User]!
+        projects: [Project]!
         author: User!
         inviteLink: String!
-        inviteRequests: [User]
+        inviteRequests: [User]!
     }
 `
 

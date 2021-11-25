@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import styled from 'styled-components';
 import { useAuth0 } from "@auth0/auth0-react";
-import { gql, useLazyQuery } from "@apollo/client";
+import { gql, useLazyQuery, useMutation } from "@apollo/client";
 import { useAppDispatch } from './app/hooks';
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faThLarge, faProjectDiagram, faCaretRight, faFileCode, faSignOutAlt, faCommentDots, faCog, faTimes, faComment } from '@fortawesome/free-solid-svg-icons'
@@ -10,9 +10,11 @@ import { faThLarge, faProjectDiagram, faCaretRight, faFileCode, faSignOutAlt, fa
 import { useSocketContext } from './context/socketContext';
 
 import { setTeam, addInviteRequest, moveTask, MoveTaskInterface } from "./features/team/teamSlice";
+import { setWorkingTasks, updateWorkingTaskStage } from './features/user/userSlice';
 
 import Modal from './components/organisms/Modal';
 import Nav from './components/organisms/Nav';
+import ContextMenu from './components/organisms/ContextMenu';
 
 import Dashboard from './pages/Dashboard';
 import Project from './pages/Project';
@@ -57,6 +59,7 @@ const getUserTeamQuery = gql`
 				}
 			}
 			users {
+				id
 				name
 			}
 			inviteRequests {
@@ -67,7 +70,23 @@ const getUserTeamQuery = gql`
 			}
 		}
 	}
+`
 
+const createUserMutation = gql`
+    mutation createUser($id: String!, $email: String!, $name: String!, $nickname: String!, $picture: String!) {
+        createUser(id: $id, email: $email, name: $name, nickname: $nickname, picture: $picture)
+    }
+`
+
+const getUserWorkingTasksQuery = gql`
+	query getUserWorkingTasks {
+		getUserWorkingTasks {
+			id
+			name
+			stage
+			projectName
+		}
+	}
 `
 
 const Container = styled.div`
@@ -84,21 +103,56 @@ const Wrapper = styled.div`
 
 function App() {
 	const dispatch = useAppDispatch();
-	const { isAuthenticated } = useAuth0();
+	const { isAuthenticated, user, getAccessTokenSilently } = useAuth0();
 	const socket = useSocketContext();
-	const [ getTeam, { data, loading } ] = useLazyQuery(getUserTeamQuery);
+	const [ getTeam, { data: teamData, loading } ] = useLazyQuery(getUserTeamQuery);
+	const [ createUser, { data: userData }] = useMutation(createUserMutation);
+	const [ getUserWorkingTasks, { data: workingTasks } ] = useLazyQuery(getUserWorkingTasksQuery);
 
 	useEffect(() => {
-		if (isAuthenticated) {
+		if (isAuthenticated && userData) {
 			getTeam()
 		}
-	}, [isAuthenticated, getTeam, socket]);
+	}, [isAuthenticated, getTeam, socket, userData]);
 
 	useEffect(() => {
-		if (data) {
-			dispatch(setTeam(data.getUserTeam));
+		if (isAuthenticated && user) {
+			const initUserInDatabase = async () => {
+				const token = await getAccessTokenSilently();
+
+				createUser({
+					variables: {
+						id: user.sub,
+						email: user.email,
+						name: user.name,
+						nickname: user.nickname,
+						picture: user.picture,
+					},
+					context: {
+						headers: {
+							"authorization": `Bearer ${token}`
+						}
+					}
+				})
+			}
+
+			initUserInDatabase();
 		}
-	}, [data, dispatch]);
+	}, [isAuthenticated, user, createUser, getAccessTokenSilently]);
+
+	useEffect(() => {
+		if (teamData) {
+			dispatch(setTeam(teamData.getUserTeam));
+
+			getUserWorkingTasks();
+		}
+	}, [teamData, getUserWorkingTasks, dispatch]);
+
+	useEffect(() => {
+		if (workingTasks) {
+			dispatch(setWorkingTasks(workingTasks.getUserWorkingTasks))
+		}
+	}, [workingTasks, dispatch])
 
 	useEffect(() => {
 		if (socket) {
@@ -116,6 +170,10 @@ function App() {
 
 			socket.on('sendMoveTaskSocket', (socketData: MoveTaskInterface) => {
 				dispatch(moveTask(socketData));
+				dispatch(updateWorkingTaskStage({
+					taskId: socketData.task.id,
+					stage: socketData.task.stage
+				}))
 			})
 		}
 
@@ -129,11 +187,12 @@ function App() {
 		}
 	}, [socket, dispatch, getTeam]);
 
-	if (loading) return <span>loading</span>
+	if (loading && userData) return <span>loading</span>
 
 	return (
 		<Container>
 			<Modal />
+			<ContextMenu />
 			<Nav />
 			<Wrapper>
 				<Routes>

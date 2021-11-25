@@ -7,9 +7,10 @@ import { TaskInterface } from '../../features/team/teamSlice';
 
 import Icon from './Icon';
 
-interface ITask extends TaskInterface {
+interface ITask extends Omit<TaskInterface, "stage"> {
     kanbanId: string;
     onDrag: (isDragging: boolean, kanbanId: string) => void;
+    onContextMenu: (e: React.MouseEvent<HTMLDivElement>, taskId: string) => void;
 }
 
 interface ContainerProps {
@@ -37,6 +38,7 @@ const Container = styled.div<ContainerProps>`
 const Title = styled(Link)`
     font-size: 20px;
     font-weight: bold;
+    color: ${({theme}) => theme.secondary}
 `
 
 const Author = styled.span`
@@ -74,7 +76,7 @@ const CommentsText = styled.span`
     margin-left: 10px;
 `
 
-const Task = ({ id, name, description, author, tag, kanbanId, comments, onDrag }: ITask) => {
+const Task = ({ id, name, description, author, tag, kanbanId, comments, onDrag, onContextMenu }: ITask) => {
     const [ { isDragging }, drag ] = useDrag(() => ({
         type: 'Task',
         item: {id, kanbanId},
@@ -88,7 +90,7 @@ const Task = ({ id, name, description, author, tag, kanbanId, comments, onDrag }
     }, [isDragging]); //eslint-disable-line
 
     return (
-        <Container isdragging={isDragging ? 'true' : ''} ref={drag}>
+        <Container onContextMenu={(e) => onContextMenu(e, id)} isdragging={isDragging ? 'true' : ''} ref={drag}>
             <Title to={`${kanbanId}/${id}`}>{name}</Title>
             <Author>{author.nickname}</Author>
             <Description>{description}</Description>
@@ -96,7 +98,7 @@ const Task = ({ id, name, description, author, tag, kanbanId, comments, onDrag }
                 <Tag>{tag}</Tag>
                 <CommentsNumber>
                     <Icon icon="comment" />
-                    <CommentsText>{comments.length}</CommentsText>
+                    <CommentsText>{comments ? comments.length : 0}</CommentsText>
                 </CommentsNumber>
             </Footer>
         </Container>

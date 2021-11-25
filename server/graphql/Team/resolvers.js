@@ -1,5 +1,6 @@
 const Team = require('../../models/Team.model');
 const User = require('../../models/User.model');
+const Task = require('../../models/Task.model');
 const {  AuthenticationError, ValidationError } = require('apollo-server-express');
 const { v4: uuidv4 } = require('uuid');
 const mongoose = require('mongoose');
@@ -20,29 +21,6 @@ const queries = {
         if (user.team.author.id === userId) return true;
 
         return false;
-    },
-    getTask: async (_, { teamId, projectId, kanbanId, taskId }, { user: userAuth }) => {
-        if (!userAuth) throw new AuthenticationError('You have to be logged in!');
-
-        const user = await User.findOne({id: userAuth.decoded.sub});
-        if (!user) throw new ValidationError('There is no user in database!');
-
-        const team = await Team.findOne({ id: teamId }).populate('users').populate('projects.kanbans.tasks.author').populate('projects.kanbans.tasks.comments.author');
-        if (!team) throw new ValidationError('There is no team with this id!');
-
-        const isUserInTeam = team.users.find(user => user.id === userAuth.decoded.sub);
-        if (!isUserInTeam) throw new ValidationError('You are not in this team!');
-
-        const project = team.projects.find(project => project.id === projectId);
-        if (!project) throw new ValidationError('There is no project with this id!');
-
-        const kanban = project.kanbans.find(kanban => kanban.id === kanbanId);
-        if (!kanban) throw new ValidationError('There is no kanban with this id!');
-
-        const task = kanban.tasks.find(task => task.id === taskId);
-        if (!task) throw new ValidationError('There is no task with this id!');
-
-        return task;
     }
 }
 
@@ -59,6 +37,7 @@ const mutations = {
         const teamId = mongoose.Types.ObjectId();
 
         const newTeam = new Team({
+            _id: teamId,
             id: teamId.toString(),
             name: name,
             author: user,
@@ -68,7 +47,6 @@ const mutations = {
             projects: []
         })
 
-        newTeam._id = teamId;
         user.team = newTeam;
 
         await newTeam.save();
@@ -218,49 +196,13 @@ const mutations = {
 
         return newKanban;
     },
-    createTask: async (_, { name, description, tag, teamId, projectId, kanbanId }, { user: userAuth }) => {
-        if (!userAuth) throw new AuthenticationError('You have to be logged in!');
-
-        const user = await User.findOne({id: userAuth.decoded.sub});
-        if (!user) throw new ValidationError('User dont exists');
-
-        const team = await Team.findOne({ id: teamId }).populate('users');
-        if (!team) throw new ValidationError('There is no team with this id!');
-
-        const isUserInTeam = team.users.find(user => user.id === userAuth.decoded.sub);
-        if (!isUserInTeam) throw new ValidationError('You are not in this team!');
-
-        const project = team.projects.find(project => project.id === projectId);
-        if (!project) throw new ValidationError('There is no project with this id!');
-        
-        const kanban = project.kanbans.find(kanban => kanban.id === kanbanId);
-        if (!kanban) throw new ValidationError('There is no kanban with this id!');
-
-        const taskId = mongoose.Types.ObjectId();
-
-        const newTask = {
-            _id: taskId,
-            id: taskId,
-            name,
-            description,
-            tag,
-            author: user,
-            comments: []
-        }
-
-        kanban.tasks.push(newTask);
-
-        await team.save();
-
-        return newTask;
-    },
     moveTask: async (_, { taskId, teamId, projectId, kanbanIdFrom, kanbanIdTo }, { user: userAuth, io }) => {
         if (!userAuth) throw new AuthenticationError('You have to be logged in!');
 
         const user = await User.findOne({id: userAuth.decoded.sub});
         if (!user) throw new ValidationError('User dont exists');
 
-        const team = await Team.findOne({ id: teamId }).populate('users').populate('projects.kanbans.tasks.author');
+        const team = await Team.findOne({ id: teamId }).deepPopulate('users')
         if (!team) throw new ValidationError('There is no team with this id!');
 
         const isUserInTeam = team.users.find(user => user.id === userAuth.decoded.sub);
@@ -272,16 +214,20 @@ const mutations = {
         const kanbanFrom = project.kanbans.find(kanban => kanban.id === kanbanIdFrom);
         if (!kanbanFrom) throw new ValidationError('There is no kanbanFrom with this id!');
 
-        const task = kanbanFrom.tasks.find(task => task.id === taskId);
-        if (!task) throw new ValidationError('There is no task with this id!');
-
         const kanbanTo = project.kanbans.find(kanban => kanban.id === kanbanIdTo);
         if (!kanbanTo) throw new ValidationError('There is no kanbanTo with this id!');
+
+        const task = await Task.findOne({ id: taskId }).deepPopulate('author comments.author');
+        if (!task) throw new ValidationError('There is no task with this id!')
+        if (task.teamId !== teamId) throw new ValidationError('This task belongs to different team!');
 
         kanbanFrom.tasks.pull({ _id: taskId });
         kanbanTo.tasks.push(task.toJSON());
 
+        task.stage = kanbanTo.name;
+
         await team.save();
+        await task.save();
 
         io.to(teamId).emit('sendMoveTaskSocket', {task, projectId, kanbanIdFrom, kanbanIdTo,});
 
@@ -293,7 +239,7 @@ const mutations = {
         const user = await User.findOne({id: userAuth.decoded.sub});
         if (!user) throw new ValidationError('User dont exists');
 
-        const team = await Team.findOne({ id: teamId }).populate('users');
+        const team = await Team.findOne({ id: teamId }).deepPopulate('users');
         if (!team) throw new ValidationError('There is no team with this id!');
 
         const isUserInTeam = team.users.find(user => user.id === userAuth.decoded.sub);
@@ -305,8 +251,9 @@ const mutations = {
         const kanban = project.kanbans.find(kanban => kanban.id === kanbanId);
         if (!kanban) throw new ValidationError('There is no kanbanFrom with this id!');
 
-        const task = kanban.tasks.find(task => task.id === taskId);
+        const task = await Task.findOne({ id: taskId });
         if (!task) throw new ValidationError('There is no task with this id!');
+        if (task.teamId !== teamId) throw new ValidationError('This task belongs to different team!');
 
         const commentId = mongoose.Types.ObjectId();
 
@@ -319,7 +266,7 @@ const mutations = {
 
         task.comments.push(newComment);
 
-        await team.save();
+        await task.save();
 
         return newComment;
     }

@@ -145,7 +145,7 @@ const NavProjects = ({ projects, active, clickedProjectId }: INavProjects) => {
                 <ProjectsLine />
                 <ProjectsWrapper>
                     {
-                        projects.map(project => {
+                        projects && projects.map(project => {
                             return <ProjectLink key={project.id} active={clickedProjectId === project.id} to={`/project/${project.id}`} text={project.name} />
                         })
                     }

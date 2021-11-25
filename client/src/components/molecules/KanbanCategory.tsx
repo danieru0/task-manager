@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import styled, { css } from 'styled-components';
 import { useDrop } from 'react-dnd'
 import { gql, useMutation } from "@apollo/client";
@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks';
 
 import { setModal } from '../../features/modal/modalSlice';
 import { selectTeam, TaskInterface } from '../../features/team/teamSlice';
+import { setContextMenu } from '../../features/context/contextSlice';
 
 import Button from '../atoms/Button';
 import Task from '../atoms/Task';
@@ -17,10 +18,20 @@ const moveTaskMutation = gql`
             id
             name
             author {
+                id
                 nickname
             }
             description
             tag
+            comments {
+                id
+                author {
+                    id
+                    picture
+                    nickname
+                }
+                text
+            }
         }
     }
 `
@@ -80,7 +91,7 @@ const TasksContainer = styled.div<TaskContainerProps>`
     padding-top: 30px;
 
     ${({ theme, active }) => active && css`
-        background: ${({theme}) => theme.primaryLighter};
+        background: ${theme.primaryLighter};
     `}
 `
 
@@ -147,6 +158,23 @@ const KanbanCategory = ({ kanbanId, projectId, name, tasks, active, isAlreadyLoa
         }))
     }
 
+    const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>, taskId: string) => {
+        e.preventDefault();
+
+        dispatch(setContextMenu({
+            contextName: 'task',
+            pos: {
+                x: e.pageX,
+                y: e.pageY
+            },
+            variables: {
+                taskId,
+                kanbanId,
+                projectId
+            }
+        }))
+    }
+
     return (
         <Container>
             <Header>
@@ -159,10 +187,10 @@ const KanbanCategory = ({ kanbanId, projectId, name, tasks, active, isAlreadyLoa
                 {
                     [...tasks].reverse().map((task, index) => {
                         return (
-                            <>
-                                <Task comments={task.comments} onDrag={onDrag} key={task.id} kanbanId={kanbanId} name={task.name} description={task.description} tag={task.tag} id={task.id} author={task.author} />
+                            <Fragment key={task.id}>
+                                <Task onContextMenu={handleContextMenu} comments={task.comments} onDrag={onDrag} key={task.id} kanbanId={kanbanId} name={task.name} description={task.description} tag={task.tag} id={task.id} author={task.author} />
                                 {index !== tasks.length - 1 && <Line key={index} />}
-                            </>
+                            </Fragment>
                         )
                     })
                 }

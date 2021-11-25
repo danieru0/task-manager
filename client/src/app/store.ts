@@ -2,11 +2,15 @@ import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 
 import teamReducer from '../features/team/teamSlice';
 import modalReducer from '../features/modal/modalSlice';
+import contextReducer from '../features/context/contextSlice';
+import userReducer from '../features/user/userSlice';
 
 export const store = configureStore({
   	reducer: {
     	team: teamReducer,
-		modal: modalReducer
+		modal: modalReducer,
+		context: contextReducer,
+		user: userReducer
   	},
 });
 

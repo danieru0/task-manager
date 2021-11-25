@@ -1,42 +1,6 @@
-const  { Schema, model } = require('mongoose');
-
-const TaskModel = new Schema();
-TaskModel.add({
-    id: {
-        type: String,
-        required: true
-    },
-    name: {
-        type: String,
-        required: true
-    },
-    author: {
-        type: Schema.Types.ObjectId,
-        ref: 'user'
-    },
-    description: {
-        type: String,
-        required: true
-    },
-    tag: {
-        type: String,
-        required: true
-    },
-    comments: [{
-        id: {
-            type: String,
-            required: true
-        },
-        author: {
-            type: Schema.Types.ObjectId,
-            ref: 'user'
-        },
-        text: {
-            type: String,
-            required: true
-        }
-    }]
-})
+const mongoose = require('mongoose');
+const { Schema, model } = mongoose;
+var deepPopulate = require('mongoose-deep-populate')(mongoose);
 
 const ProjectModel = new Schema();
 ProjectModel.add({
@@ -61,7 +25,10 @@ ProjectModel.add({
             type: String,
             required: true
         },
-        tasks: [TaskModel]
+        tasks: [{
+            type: Schema.Types.ObjectId,
+            ref: 'task'
+        }]
     }]
 })
 
@@ -92,6 +59,8 @@ const TeamSchema = new Schema({
     }],
     projects: [ProjectModel]
 })
+
+TeamSchema.plugin(deepPopulate);
 
 const Team = model('team', TeamSchema);
 

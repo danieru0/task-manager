@@ -1,4 +1,6 @@
-const { Schema, model } = require('mongoose');
+const mongoose = require('mongoose');
+const { Schema, model } = mongoose;
+var deepPopulate = require('mongoose-deep-populate')(mongoose);
 
 const UserSchema = Schema({
     id: {
@@ -24,8 +26,14 @@ const UserSchema = Schema({
     team: {
         type: Schema.Types.ObjectId,
         ref: 'team'
-    }
+    },
+    workingTasks: [{
+        type: Schema.Types.ObjectId,
+        ref: 'task'
+    }]
 })
+
+UserSchema.plugin(deepPopulate);
 
 const User = model('user', UserSchema);
 

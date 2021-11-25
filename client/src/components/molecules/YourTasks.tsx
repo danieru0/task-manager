@@ -1,7 +1,17 @@
 import styled from 'styled-components';
 
-const Container = styled.table`
+import { WorkingTasksInterface } from '../../features/user/userSlice';
+
+interface IYourTasks {
+    tasks: WorkingTasksInterface[];
+}
+
+const ContainerTable = styled.table`
     width: 800px;
+    margin-top: 10px;
+`
+
+const NoTasks = styled.span`
     margin-top: 10px;
 `
 
@@ -26,9 +36,17 @@ const Td = styled.td`
     padding: 20px;
 `
 
-const YourTasks = () => {
+const YourTasks = ({ tasks }: IYourTasks) => {
+    if (tasks.length === 0) {
+        return (
+            <NoTasks>
+                You don't have any tasks
+            </NoTasks>
+        )
+    }
+
     return (
-        <Container>
+        <ContainerTable>
             <Thead>
                 <Tr>
                     <Th>Name</Th>
@@ -37,18 +55,19 @@ const YourTasks = () => {
                 </Tr>
             </Thead>
             <Tbody>
-                <Tr>
-                    <Td>Create new framework</Td>
-                    <Td>In process</Td>
-                    <Td>mojoo.com</Td>
-                </Tr>
-                <Tr>
-                    <Td>Create new framework</Td>
-                    <Td>In process</Td>
-                    <Td>mojoo.com</Td>
-                </Tr>
+                {
+                    tasks.map(task => {
+                        return (
+                            <Tr key={task.id}>
+                                <Td>{task.name}</Td>
+                                <Td>{task.stage}</Td>
+                                <Td>{task.projectName}</Td>
+                            </Tr>
+                        )
+                    })
+                }
             </Tbody>
-        </Container>
+        </ContainerTable>
     );
 };
 

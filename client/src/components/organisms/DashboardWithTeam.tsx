@@ -5,6 +5,7 @@ import { useAppSelector } from '../../app/hooks';
 import { useNavigate } from 'react-router-dom';
 
 import { selectTeam } from "../../features/team/teamSlice";
+import { selectUser } from '../../features/user/userSlice';
 
 import Button from '../atoms/Button';
 
@@ -63,6 +64,7 @@ const DashboardWithTeam = () => {
     const { user } = useAuth0();
     const navigate = useNavigate();
     const teamSelector = useAppSelector(selectTeam);
+    const userSelector = useAppSelector(selectUser);
     const { data, loading } = useQuery(isAuthorOfTeam, {
         variables: {
             userId: user!.sub
@@ -98,7 +100,7 @@ const DashboardWithTeam = () => {
                 </>
             )}
             <SectionName>Your tasks</SectionName>
-            <YourTasks />
+            <YourTasks tasks={userSelector.workingTasks} />
         </Container>
     );
 };

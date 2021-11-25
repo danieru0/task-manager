@@ -32,6 +32,8 @@ const Tbody = styled.tbody`
 const ManageProjectsTable = ({ projects }: IManagerProjectsTable) => {
     if (!projects) return <span>loading</span>
 
+    console.log(projects);
+
     return (
         <Table>
             <Thead>
@@ -44,7 +46,7 @@ const ManageProjectsTable = ({ projects }: IManagerProjectsTable) => {
             <Tbody>
                 {
                     projects.map(project => {
-                        return <ManageProjectsItem buttonsType="table" key={project.id} id={project.id} name={project.name} tasksCounter={project.kanbans.length} />
+                        return <ManageProjectsItem buttonsType="table" key={project.id} id={project.id} name={project.name} tasksCounter={project.kanbans ? project.kanbans.length : 0} />
                     })
                 }
             </Tbody>

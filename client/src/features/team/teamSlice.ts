@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction, current } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 
 export interface MoveTaskInterface {
@@ -19,6 +19,7 @@ export interface TaskInterface {
     name: string;
     description: string;
     author: UserInterface;
+    stage: string;
     tag: string;
     comments: CommentInterface[]
 }
@@ -141,8 +142,6 @@ export const teamSlice = createSlice({
 
                 const taskIndex = state.team.projects[projectIndex].kanbans[kanbanIndex].tasks.findIndex(task => task.id === taskId);
                 if (taskIndex === -1) throw new Error('Task with this id dont exists!');
-
-                console.log(current(state.team.projects[projectIndex].kanbans[kanbanIndex].tasks[taskIndex]));
 
                 state.team.projects[projectIndex].kanbans[kanbanIndex].tasks[taskIndex].comments.push(comment);
             }

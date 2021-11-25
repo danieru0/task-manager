@@ -5,7 +5,8 @@ const types = `
         name: String!
         nickname: String!
         picture: String!
-        team: Team
+        team: Team!
+        workingTasks: [Task]
     }
 `
 

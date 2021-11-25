@@ -14,7 +14,6 @@ const Container = styled.div`
     height: calc(100% - 150px);
     display: flex;
     justify-content: space-around;
-    position: relative;
 `
 
 const LoadingWrapper = styled.div`
