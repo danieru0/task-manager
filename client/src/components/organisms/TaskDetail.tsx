@@ -37,9 +37,25 @@ const Container = styled.div`
     flex-direction: column;
 `
 
+const Header = styled.div`
+    display: flex;
+    flex-direction: column;
+`
+
 const TaskTitle = styled.span`
     font-size: 28px;
     font-weight: bold;
+`
+
+const Avatar = styled.img`
+    border-radius: 100%;
+    width: 50px;
+`
+
+const UsersWorkingWrapper = styled.div`
+    ${Avatar} {
+        width: 30px;
+    }
 `
 
 const DescriptionWrapper = styled.div`
@@ -47,10 +63,6 @@ const DescriptionWrapper = styled.div`
     margin-top: 50px;
 `
 
-const Avatar = styled.img`
-    border-radius: 100%;
-    width: 50px;
-`
 
 const Description = styled.div`
     display: flex;
@@ -144,7 +156,16 @@ const TaskDetail = ({ taskId, kanbanId, project, teamId }: ITaskDetail) => {
 
     return (
         <Container>
-            <TaskTitle>{task.name}</TaskTitle>
+            <Header>
+                <TaskTitle>{task.name}</TaskTitle>
+                <UsersWorkingWrapper>
+                    {
+                        task.workingUsers && task.workingUsers.map(user => {
+                            return <Avatar src={user.picture} />
+                        })
+                    }
+                </UsersWorkingWrapper>
+            </Header>
             <DescriptionWrapper>
                 <Avatar src={task.author.picture} />
                 <Description>

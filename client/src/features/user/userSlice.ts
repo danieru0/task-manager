@@ -31,11 +31,14 @@ export const userSlice = createSlice({
             if (taskIndex !== -1) {
                 state.workingTasks[taskIndex].stage = stage;
             }
+        },
+        clearUserData: state => {
+            state.workingTasks = [];
         }
     }
 })
 
-export const { setWorkingTasks, updateWorkingTaskStage } = userSlice.actions;
+export const { setWorkingTasks, updateWorkingTaskStage, clearUserData } = userSlice.actions;
 
 export const selectUser = (state: RootState) => state.user;
 

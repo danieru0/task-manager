@@ -21,7 +21,8 @@ export interface TaskInterface {
     author: UserInterface;
     stage: string;
     tag: string;
-    comments: CommentInterface[]
+    comments: CommentInterface[];
+    workingUsers: UserInterface[];
 }
 
 export interface KanbanInterface {
@@ -145,11 +146,14 @@ export const teamSlice = createSlice({
 
                 state.team.projects[projectIndex].kanbans[kanbanIndex].tasks[taskIndex].comments.push(comment);
             }
+        },
+        clearTeamData: state => {
+            state.team = undefined;
         }
     }
 })
 
-export const { setTeam, removeInviteRequest, addInviteRequest, addProject, addKanban, addTask, moveTask, addComment } = teamSlice.actions;
+export const { setTeam, removeInviteRequest, addInviteRequest, addProject, addKanban, addTask, moveTask, addComment, clearTeamData } = teamSlice.actions;
 
 export const selectTeam = (state: RootState) => state.team;
 

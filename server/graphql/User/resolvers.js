@@ -5,7 +5,7 @@ const queries = {
     getUserTeam: async (_, {}, { user: userAuth, socketUser }) => {
         if (!userAuth) throw new AuthenticationError('You are not logged in!');
 
-        const user = await User.findOne({id: userAuth.decoded.sub}).deepPopulate('team.author team.users team.inviteRequests team.projects.kanbans.tasks team.projects.kanbans.tasks.author team.projects.kanbans.tasks.comments.author');
+        const user = await User.findOne({id: userAuth.decoded.sub}).deepPopulate('team.author team.users team.inviteRequests team.projects.kanbans.tasks team.projects.kanbans.tasks.author team.projects.kanbans.tasks.workingUsers  team.projects.kanbans.tasks.comments.author');
 
         if (!user) throw new ValidationError('User dont exists');
 

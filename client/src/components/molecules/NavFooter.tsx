@@ -1,4 +1,9 @@
 import styled from 'styled-components';
+import { useAuth0 } from "@auth0/auth0-react";
+import { useAppDispatch } from '../../app/hooks';
+
+import { clearUserData } from '../../features/user/userSlice';
+import { clearTeamData } from '../../features/team/teamSlice';
 
 import User from '../atoms/User';
 import Icon from '../atoms/Icon';
@@ -31,10 +36,19 @@ const LogoutButton = styled.button`
 
 
 const NavFooter = () => {
+    const dispatch = useAppDispatch();
+    const { logout } = useAuth0();
+
+    const handleLogoutButton = () => {
+        dispatch(clearUserData);
+        dispatch(clearTeamData);
+        logout({ returnTo: window.location.origin })
+    }
+
     return (
         <Container>
             <User />
-            <LogoutButton>
+            <LogoutButton onClick={handleLogoutButton}>
                 <StyledIconLogout icon="sign-out-alt" />
             </LogoutButton>
         </Container>

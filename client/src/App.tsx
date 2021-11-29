@@ -47,6 +47,10 @@ const getUserTeamQuery = gql`
 						}
 						description
 						tag
+						workingUsers {
+							nickname
+							picture
+						}
 						comments {
 							id
 							author {

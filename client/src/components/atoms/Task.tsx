@@ -7,7 +7,7 @@ import { TaskInterface } from '../../features/team/teamSlice';
 
 import Icon from './Icon';
 
-interface ITask extends Omit<TaskInterface, "stage"> {
+interface ITask extends Omit<TaskInterface, "stage"|"workingUsers"> {
     kanbanId: string;
     onDrag: (isDragging: boolean, kanbanId: string) => void;
     onContextMenu: (e: React.MouseEvent<HTMLDivElement>, taskId: string) => void;
