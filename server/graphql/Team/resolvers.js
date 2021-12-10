@@ -229,7 +229,7 @@ const mutations = {
         await team.save();
         await task.save();
 
-        io.to(teamId).emit('sendMoveTaskSocket', {task, projectId, kanbanIdFrom, kanbanIdTo,});
+        io.to(teamId).emit('sendMoveTaskSocket', {task, projectId, kanbanIdFrom, kanbanIdTo});
 
         return task;
     },
@@ -269,6 +269,36 @@ const mutations = {
         await task.save();
 
         return newComment;
+    },
+    deleteKanban: async (_, { teamId, projectId, kanbanId }, { user: userAuth, io }) => {
+        if (!userAuth) throw new AuthenticationError('You have to be logged in!');
+
+        const user = await User.findOne({id: userAuth.decoded.sub});
+        if (!user) throw new ValidationError('User dont exists');
+
+        const team = await Team.findOne({ id: teamId }).deepPopulate('author projects.kanbans');
+        if (!team) throw new ValidationError('There is no team with this id!');
+        if (team.author.id !== userAuth.decoded.sub) throw new ValidationError('You are not author of this team!');
+
+        const project = team.projects.find(project => project.id === projectId);
+        if (!project) throw new ValidationError('There is no project with this id!');
+
+        const kanban = project.kanbans.find(kanban => kanban.id === kanbanId);
+        if (!kanban) throw new ValidationError('There is no kanbanFrom with this id!');
+
+        const deleteTasksPromises = kanban.tasks.map(task => Task.deleteOne({ _id: task._id }));
+        await Promise.all(deleteTasksPromises);
+
+        project.kanbans = project.kanbans.filter(kanban => kanban.id !== kanbanId);
+
+        await team.save();
+
+        io.to(teamId).emit('sendDeleteKanbanSocket', {projectId, kanbanId});
+
+        return {
+            projectId,
+            kanbanId
+        }
     }
 }
 

@@ -95,6 +95,19 @@ export const teamSlice = createSlice({
                 }
             }
         },
+        removeKanban: (state, action: PayloadAction<{projectId: string, kanbanId: string}>) => {
+            const { projectId, kanbanId } = action.payload;
+
+            if (state.team) {
+                const projectIndex = state.team.projects.findIndex(project => project.id === projectId);
+                if (projectIndex === -1) throw new Error('Project with this id dont exists!');
+
+                const kanbanIndex= state.team.projects[projectIndex].kanbans.findIndex(kanban => kanban.id === kanbanId);
+                if (kanbanIndex === -1) throw new Error('Kanban with this id dont exists!');
+
+                state.team.projects[projectIndex].kanbans = state.team.projects[projectIndex].kanbans.filter(kanban => kanban.id !== kanbanId);
+            }
+        },
         addTask: (state, action: PayloadAction<{projectId: string, kanbanId: string, task: TaskInterface}>) => {
             const { projectId, kanbanId, task } = action.payload;
 
@@ -153,7 +166,7 @@ export const teamSlice = createSlice({
     }
 })
 
-export const { setTeam, removeInviteRequest, addInviteRequest, addProject, addKanban, addTask, moveTask, addComment, clearTeamData } = teamSlice.actions;
+export const { setTeam, removeInviteRequest, addInviteRequest, addProject, addKanban, removeKanban, addTask, moveTask, addComment, clearTeamData } = teamSlice.actions;
 
 export const selectTeam = (state: RootState) => state.team;
 

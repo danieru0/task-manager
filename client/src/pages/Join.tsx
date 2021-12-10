@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import styled from 'styled-components';
 import { useParams, Navigate } from 'react-router';
 import { useAuth0 } from "@auth0/auth0-react";
-
 import { gql, useMutation } from "@apollo/client";
 
 import WelcomeText from '../components/atoms/WelcomeText';

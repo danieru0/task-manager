@@ -31,9 +31,7 @@ const Tbody = styled.tbody`
 
 const ManageProjectsTable = ({ projects }: IManagerProjectsTable) => {
     if (!projects) return <span>loading</span>
-
-    console.log(projects);
-
+    
     return (
         <Table>
             <Thead>

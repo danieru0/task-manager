@@ -10,6 +10,7 @@ interface IManageProjectsItem {
     tasksCounter: number;
     name: string;
     buttonsType: buttonsType;
+    onKanbanDeleteClick?: (kanbanId: string) => void;
 }
 
 const Tr = styled.tr`
@@ -34,7 +35,7 @@ const StyledButton = styled(Button)`
     margin: 0px 5px;
 `
 
-const ManageProjectsItem = ({ name, tasksCounter, id, buttonsType }: IManageProjectsItem) => {
+const ManageProjectsItem = ({ name, tasksCounter, id, buttonsType, onKanbanDeleteClick }: IManageProjectsItem) => {
     const navigate = useNavigate();
 
     return (
@@ -51,7 +52,7 @@ const ManageProjectsItem = ({ name, tasksCounter, id, buttonsType }: IManageProj
                             </>
                         ) : (
                             <>
-                                <StyledButton size="small" onClick={() => alert('remove')} text="remove" />
+                                <StyledButton size="small" onClick={() => onKanbanDeleteClick && onKanbanDeleteClick(id)} text="remove" />
                             </>
                         )
                     }

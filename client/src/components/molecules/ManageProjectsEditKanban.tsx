@@ -10,6 +10,7 @@ import { ProjectInterface } from '../../features/team/teamSlice';
 interface IManageProjectsEditKanban {
     project: ProjectInterface
     onNewKanbanClick: (id: string) => void;
+    onKanbanDeleteClick: (kanbanId: string, projectId: string) => void;
 }
 
 const Container = styled.div`
@@ -60,7 +61,7 @@ const StyledButton = styled(Button)`
     margin-left: 20px;
 `
 
-const ManageProjectsEditKanban = ({ project, onNewKanbanClick }: IManageProjectsEditKanban) => {
+const ManageProjectsEditKanban = ({ project, onNewKanbanClick, onKanbanDeleteClick }: IManageProjectsEditKanban) => {
     return (
         <Container>
             <Form>
@@ -80,7 +81,7 @@ const ManageProjectsEditKanban = ({ project, onNewKanbanClick }: IManageProjects
                         {
                             project.kanbans.map(projectElement => {
                                 return (
-                                    <ManageProjectsItem key={projectElement.id} buttonsType="edit" id={projectElement.id} name={projectElement.name} tasksCounter={projectElement.tasks.length} />
+                                    <ManageProjectsItem onKanbanDeleteClick={(kanbanId: string) => onKanbanDeleteClick(kanbanId, project.id)} key={projectElement.id} buttonsType="edit" id={projectElement.id} name={projectElement.name} tasksCounter={projectElement.tasks.length} />
                                 )
                             })
                         }

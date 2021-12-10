@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation, matchPath, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useAuth0 } from "@auth0/auth0-react";
 import { gql, useLazyQuery, useMutation } from "@apollo/client";
@@ -9,7 +9,7 @@ import { faThLarge, faProjectDiagram, faCaretRight, faFileCode, faSignOutAlt, fa
 
 import { useSocketContext } from './context/socketContext';
 
-import { setTeam, addInviteRequest, moveTask, MoveTaskInterface } from "./features/team/teamSlice";
+import { setTeam, addInviteRequest, moveTask, removeKanban, MoveTaskInterface } from "./features/team/teamSlice";
 import { setWorkingTasks, updateWorkingTaskStage } from './features/user/userSlice';
 
 import Modal from './components/organisms/Modal';
@@ -107,8 +107,10 @@ const Wrapper = styled.div`
 
 function App() {
 	const dispatch = useAppDispatch();
-	const { isAuthenticated, user, getAccessTokenSilently } = useAuth0();
 	const socket = useSocketContext();
+	const { pathname } = useLocation();
+	const navigate = useNavigate();
+	const { isAuthenticated, user, getAccessTokenSilently } = useAuth0();
 	const [ getTeam, { data: teamData, loading } ] = useLazyQuery(getUserTeamQuery);
 	const [ createUser, { data: userData }] = useMutation(createUserMutation);
 	const [ getUserWorkingTasks, { data: workingTasks } ] = useLazyQuery(getUserWorkingTasksQuery);
@@ -178,6 +180,16 @@ function App() {
 					taskId: socketData.task.id,
 					stage: socketData.task.stage
 				}))
+			});
+			
+			socket.on('sendDeleteKanbanSocket', ({kanbanId, projectId}) => {
+				dispatch(removeKanban({
+					kanbanId,
+					projectId
+				}));
+				
+				const currentUrl = matchPath('/project/:id/:kanbanId/:taskId', pathname)
+				if (currentUrl && currentUrl.params.kanbanId === kanbanId) navigate('/');
 			})
 		}
 
@@ -187,9 +199,10 @@ function App() {
 				socket.off('sendJoinTeamRequestSocket');
 				socket.off('sendAcceptTeamRequestSocket');
 				socket.off('sendMoveTaskSocket');
+				socket.off('sendDeleteKanbanSocket');
 			}
 		}
-	}, [socket, dispatch, getTeam]);
+	}, [socket, dispatch, getTeam, pathname, navigate]);
 
 	if (loading && userData) return <span>loading</span>
 

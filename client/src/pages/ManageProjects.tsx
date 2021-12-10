@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useParams } from 'react-router';
+import { gql, useMutation } from "@apollo/client";
 
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 
@@ -10,6 +11,15 @@ import { selectTeam, ProjectInterface } from '../features/team/teamSlice';
 import ManageProjectsTable from '../components/molecules/ManageProjectsTable';
 import ManageProjectsEditKanban from '../components/molecules/ManageProjectsEditKanban';
 import Button from '../components/atoms/Button';
+
+const deleteKanbanMutation = gql`
+    mutation deleteKanban($teamId: String!, $projectId: String!, $kanbanId: String!) {
+        deleteKanban(teamId: $teamId, projectId: $projectId, kanbanId: $kanbanId) {
+            projectId
+            kanbanId
+        }
+    }
+`
 
 const Container = styled.div`
     width: 100%;
@@ -38,6 +48,7 @@ const ManageProjects = () => {
     const { id } = useParams();
     const teamSelector = useAppSelector(selectTeam);
     const [project, setProject] = useState<ProjectInterface | undefined>(undefined)
+    const [ deleteKanban ] = useMutation(deleteKanbanMutation);
 
     const handleNewProjectClick = () => {
         dispatch(setModal({
@@ -52,6 +63,16 @@ const ManageProjects = () => {
                 projectId
             }
         }))
+    }
+
+    const handleKanbanDeleteClick = (kanbanId: string, projectId: string) => {
+        deleteKanban({
+            variables: {
+                teamId: teamSelector.team!.id,
+                projectId,
+                kanbanId
+            }
+        });
     }
 
     useEffect(() => {
@@ -70,7 +91,7 @@ const ManageProjects = () => {
             </Header>
             {
                 id && project ? (
-                    <ManageProjectsEditKanban onNewKanbanClick={handleNewKanbanClick} project={project} />
+                    <ManageProjectsEditKanban onKanbanDeleteClick={handleKanbanDeleteClick} onNewKanbanClick={handleNewKanbanClick} project={project} />
                 ) : (
                     <ManageProjectsTable projects={teamSelector.team?.projects} />
                 )

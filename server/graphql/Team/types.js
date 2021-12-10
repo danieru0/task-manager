@@ -1,4 +1,9 @@
 const types = `
+    type DeleteKanbanResult {
+        projectId: String!
+        kanbanId: String!
+    }
+
     type Comment {
         id: String!
         author: User!
