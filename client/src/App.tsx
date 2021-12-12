@@ -9,7 +9,7 @@ import { faThLarge, faProjectDiagram, faCaretRight, faFileCode, faSignOutAlt, fa
 
 import { useSocketContext } from './context/socketContext';
 
-import { setTeam, addInviteRequest, moveTask, removeKanban, MoveTaskInterface } from "./features/team/teamSlice";
+import { setTeam, addInviteRequest, moveTask, removeKanban,removeProject, MoveTaskInterface } from "./features/team/teamSlice";
 import { setWorkingTasks, updateWorkingTaskStage } from './features/user/userSlice';
 
 import Modal from './components/organisms/Modal';
@@ -191,6 +191,13 @@ function App() {
 				const currentUrl = matchPath('/project/:id/:kanbanId/:taskId', pathname)
 				if (currentUrl && currentUrl.params.kanbanId === kanbanId) navigate('/');
 			})
+
+			socket.on('sendDeleteProjectSocket', projectId => {
+				dispatch(removeProject(projectId));
+
+				const currentUrl = matchPath('/project/:id', pathname)
+				if (currentUrl && currentUrl.params.id === projectId) navigate('/');
+			})
 		}
 
 		return () => {
@@ -200,6 +207,7 @@ function App() {
 				socket.off('sendAcceptTeamRequestSocket');
 				socket.off('sendMoveTaskSocket');
 				socket.off('sendDeleteKanbanSocket');
+				socket.off('sendDeleteProjectSocket');
 			}
 		}
 	}, [socket, dispatch, getTeam, pathname, navigate]);

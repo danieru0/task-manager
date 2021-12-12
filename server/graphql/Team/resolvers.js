@@ -299,6 +299,29 @@ const mutations = {
             projectId,
             kanbanId
         }
+    },
+    deleteProject: async (_, { teamId, projectId }, { user: userAuth, io }) => {
+        if (!userAuth) throw new AuthenticationError('You have to be logged in!');
+
+        const user = await User.findOne({id: userAuth.decoded.sub});
+        if (!user) throw new ValidationError('User dont exists');
+
+        const team = await Team.findOne({ id: teamId }).deepPopulate('author');
+        if (!team) throw new ValidationError('There is no team with this id!');
+        if (team.author.id !== userAuth.decoded.sub) throw new ValidationError('You are not author of this team!');
+
+        const project = team.projects.find(project => project.id === projectId);
+        if (!project) throw new ValidationError('There is no project with this id!');
+
+        if (project.kanbans.length !== 0) throw new ValidationError('You have to delete kanbans first!');
+
+        team.projects = team.projects.filter(project => project.id !== projectId);
+
+        await team.save();
+
+        io.to(teamId).emit('sendDeleteProjectSocket', projectId);
+
+        return projectId;
     }
 }
 

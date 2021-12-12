@@ -79,7 +79,7 @@ const ManageProjectsEditKanban = ({ project, onNewKanbanClick, onKanbanDeleteCli
                     </Thead>
                     <Tbody>
                         {
-                            project.kanbans.map(projectElement => {
+                            project.kanbans && project.kanbans.map(projectElement => {
                                 return (
                                     <ManageProjectsItem onKanbanDeleteClick={(kanbanId: string) => onKanbanDeleteClick(kanbanId, project.id)} key={projectElement.id} buttonsType="edit" id={projectElement.id} name={projectElement.name} tasksCounter={projectElement.tasks.length} />
                                 )

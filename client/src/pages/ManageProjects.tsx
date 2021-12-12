@@ -21,6 +21,12 @@ const deleteKanbanMutation = gql`
     }
 `
 
+const deleteProjectMutation = gql`
+    mutation deleteProject($teamId: String!, $projectId: String!) {
+        deleteProject(teamId: $teamId, projectId: $projectId)
+    }
+`
+
 const Container = styled.div`
     width: 100%;
     height: 100%;
@@ -49,6 +55,11 @@ const ManageProjects = () => {
     const teamSelector = useAppSelector(selectTeam);
     const [project, setProject] = useState<ProjectInterface | undefined>(undefined)
     const [ deleteKanban ] = useMutation(deleteKanbanMutation);
+    const [ deleteProject ] = useMutation(deleteProjectMutation, {
+        onError: err => {
+            alert(err.message);
+        }
+    })
 
     const handleNewProjectClick = () => {
         dispatch(setModal({
@@ -75,6 +86,15 @@ const ManageProjects = () => {
         });
     }
 
+    const handleProjectDeleteClick = (projectId: string) => {
+        deleteProject({
+            variables: {
+                teamId: teamSelector.team!.id,
+                projectId
+            }
+        })
+    }
+
     useEffect(() => {
         if (teamSelector.team) {
             const selectedProject = teamSelector.team.projects.find(project => project.id === id);
@@ -93,7 +113,7 @@ const ManageProjects = () => {
                 id && project ? (
                     <ManageProjectsEditKanban onKanbanDeleteClick={handleKanbanDeleteClick} onNewKanbanClick={handleNewKanbanClick} project={project} />
                 ) : (
-                    <ManageProjectsTable projects={teamSelector.team?.projects} />
+                    <ManageProjectsTable onProjectDeleteClick={handleProjectDeleteClick}  projects={teamSelector.team?.projects} />
                 )
             }
         </Container>

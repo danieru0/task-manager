@@ -84,6 +84,15 @@ export const teamSlice = createSlice({
                 state.team.projects = [...state.team.projects, action.payload];
             }
         },
+        removeProject: (state, action: PayloadAction<string>) => {
+            if (state.team) {
+                const projectIndex = state.team.projects.findIndex(project => project.id === action.payload);
+
+                if (projectIndex !== -1) {
+                    state.team.projects = state.team.projects.filter(project => project.id !== action.payload);
+                }
+            }
+        },
         addKanban: (state, action: PayloadAction<{projectId: string, kanban: KanbanInterface}>) => {
             const { projectId, kanban } = action.payload;
 
@@ -166,7 +175,7 @@ export const teamSlice = createSlice({
     }
 })
 
-export const { setTeam, removeInviteRequest, addInviteRequest, addProject, addKanban, removeKanban, addTask, moveTask, addComment, clearTeamData } = teamSlice.actions;
+export const { setTeam, removeInviteRequest, addInviteRequest, addProject, removeProject, addKanban, removeKanban, addTask, moveTask, addComment, clearTeamData } = teamSlice.actions;
 
 export const selectTeam = (state: RootState) => state.team;
 

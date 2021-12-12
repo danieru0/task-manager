@@ -24,9 +24,13 @@ const createTaskMutation = gql`
             name
             author {
                 nickname
+                picture
             }
             description
             tag
+            comments {
+                id
+            }
         }
     }
 `

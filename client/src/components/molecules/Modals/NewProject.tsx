@@ -20,6 +20,9 @@ const createProjectMutation = gql`
             id
             name
             tasksCounter
+            kanbans {
+                id
+            }
         }
     }
 `

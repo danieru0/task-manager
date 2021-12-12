@@ -6,6 +6,7 @@ import ManageProjectsItem from '../atoms/ManageProjectsItem';
 
 interface IManagerProjectsTable {
     projects: ProjectInterface[] | undefined;
+    onProjectDeleteClick: (projectId: string) => void;
 }
 
 const Table = styled.table`
@@ -29,7 +30,7 @@ const Tbody = styled.tbody`
     font-size: 18px;
 `
 
-const ManageProjectsTable = ({ projects }: IManagerProjectsTable) => {
+const ManageProjectsTable = ({ projects, onProjectDeleteClick }: IManagerProjectsTable) => {
     if (!projects) return <span>loading</span>
     
     return (
@@ -44,7 +45,7 @@ const ManageProjectsTable = ({ projects }: IManagerProjectsTable) => {
             <Tbody>
                 {
                     projects.map(project => {
-                        return <ManageProjectsItem buttonsType="table" key={project.id} id={project.id} name={project.name} tasksCounter={project.kanbans ? project.kanbans.length : 0} />
+                        return <ManageProjectsItem onProjectDeleteClick={(projectId: string) => onProjectDeleteClick(projectId)} buttonsType="table" key={project.id} id={project.id} name={project.name} tasksCounter={project.kanbans ? project.kanbans.length : 0} />
                     })
                 }
             </Tbody>
