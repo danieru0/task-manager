@@ -9,6 +9,7 @@ const mutations = `
     createComment(taskId: String!, teamId: String!, projectId: String!, kanbanId: String!, text: String!): Comment
     deleteKanban(teamId: String!, projectId: String!, kanbanId: String!): DeleteKanbanResult
     deleteProject(teamId: String!, projectId: String!): String
+    kickFromTeam(teamId: String!, userId: String!): Boolean
 `
 
 module.exports = mutations;

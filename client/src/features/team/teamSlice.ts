@@ -41,6 +41,7 @@ export interface ProjectInterface {
 export interface UserInterface {
     id: string;
     email: string;
+    name: string;
     nickname: string;
     picture: string;
 }
@@ -171,11 +172,16 @@ export const teamSlice = createSlice({
         },
         clearTeamData: state => {
             state.team = undefined;
+        },
+        deleteUserFromTeam: (state, action: PayloadAction<string>) => {
+            if (state.team) {
+                state.team.users = state.team.users.filter(user => user.id !== action.payload);
+            }
         }
     }
 })
 
-export const { setTeam, removeInviteRequest, addInviteRequest, addProject, removeProject, addKanban, removeKanban, addTask, moveTask, addComment, clearTeamData } = teamSlice.actions;
+export const { setTeam, removeInviteRequest, addInviteRequest, addProject, removeProject, addKanban, removeKanban, addTask, moveTask, addComment, clearTeamData, deleteUserFromTeam } = teamSlice.actions;
 
 export const selectTeam = (state: RootState) => state.team;
 

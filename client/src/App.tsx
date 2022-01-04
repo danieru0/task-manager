@@ -22,6 +22,8 @@ import Messages from './pages/Messages';
 import Settings from './pages/Settings';
 import Join from './pages/Join';
 import ManageProjects from './pages/ManageProjects';
+import Users from './pages/ManageUsers';
+import KickPage from './pages/KickPage';
 
 library.add(faThLarge, faProjectDiagram, faCaretRight, faFileCode, faSignOutAlt, faCommentDots, faCog, faTimes, faComment);
 
@@ -65,6 +67,8 @@ const getUserTeamQuery = gql`
 			users {
 				id
 				name
+				nickname
+				email
 			}
 			inviteRequests {
 				id
@@ -198,6 +202,12 @@ function App() {
 				const currentUrl = matchPath('/project/:id', pathname)
 				if (currentUrl && currentUrl.params.id === projectId) navigate('/');
 			})
+
+			socket.on('sendKickFromTeamSocket', () => {
+				dispatch(setTeam(null));
+
+				navigate('/kicked');
+			})
 		}
 
 		return () => {
@@ -208,6 +218,7 @@ function App() {
 				socket.off('sendMoveTaskSocket');
 				socket.off('sendDeleteKanbanSocket');
 				socket.off('sendDeleteProjectSocket');
+				socket.off('sendDeleteKickSocket');
 			}
 		}
 	}, [socket, dispatch, getTeam, pathname, navigate]);
@@ -227,8 +238,10 @@ function App() {
 					<Route path="/project/:id" element={<Project />} />
 					<Route path="/manage-projects/:id" element={<ManageProjects />} />
 					<Route path="/manage-projects" element={<ManageProjects />} />
+					<Route path="/manage-users" element={<Users />} />
 					<Route path="/messages" element={<Messages />} />
 					<Route path="/settings" element={<Settings />} />
+					<Route path="/kicked" element={<KickPage />} />
 				</Routes>
 			</Wrapper>
 		</Container>

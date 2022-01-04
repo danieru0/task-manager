@@ -71,10 +71,6 @@ const DashboardWithTeam = () => {
         }
     });
 
-    const handleManageProjectsButton = () => {
-        navigate('manage-projects');
-    }
-
     if (!teamSelector.team || loading) return <span>loading</span>
 
     return (
@@ -93,8 +89,8 @@ const DashboardWithTeam = () => {
                     <InviteRequests teamId={teamSelector.team!.id} users={teamSelector.team!.inviteRequests} />
                     <SectionName>Manage</SectionName>
                     <ManageButtons>
-                        <Button size="large" onClick={() => alert('manage')} text="manage users" />
-                        <Button size="large" onClick={handleManageProjectsButton} text="manage projects" />
+                        <Button size="large" onClick={() => navigate('manage-users')} text="manage users" />
+                        <Button size="large" onClick={() => navigate('manage-projects')} text="manage projects" />
                         <Button size="large" onClick={() => alert('manage')} text="manage team" />
                     </ManageButtons>
                 </>

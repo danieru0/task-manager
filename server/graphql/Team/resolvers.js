@@ -322,7 +322,38 @@ const mutations = {
         io.to(teamId).emit('sendDeleteProjectSocket', projectId);
 
         return projectId;
+    },
+    kickFromTeam: async (_, { teamId, userId }, { user: userAuth, allSockets, io }) => {
+        if (!userAuth) throw new AuthenticationError('You have to be logged in!');
+
+        const userThatMakesRequest = await User.findOne({id: userAuth.decoded.sub});
+        if (!userThatMakesRequest) throw new ValidationError('User dont exists');
+
+        const team = await Team.findOne({ id: teamId }).deepPopulate('users author');
+        if (!team) throw new ValidationError('There is no team with this id!');
+        if (team.author.id !== userAuth.decoded.sub) throw new ValidationError('You are not author of this team!');
+
+        const userToKick = await User.findOne({id: userId});
+        if (!userToKick) throw new ValidationError('User with this id doesnt exists!');
+
+        const isUserToKickIsInTeam = team.users.find(user => user.id === userId);
+        if (!isUserToKickIsInTeam) throw new ValidationError('User with this id is not in this team!');
+
+        if (userId === userAuth.decoded.sub) throw new ValidationError('You cant kick yourself!');
+
+        
+        team.users = team.users.filter(user => user.id !== userId);
+        userToKick.team = null;
+        
+        await team.save();
+        await userToKick.save();
+        
+        const userSocket = allSockets.find(user => user.databaseId === userId);
+        if (userSocket) io.to(userSocket.socketId).emit('sendKickFromTeamSocket');
+
+        return true;
     }
+
 }
 
 module.exports = { queries, mutations };
