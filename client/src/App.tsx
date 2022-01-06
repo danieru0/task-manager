@@ -24,6 +24,7 @@ import Join from './pages/Join';
 import ManageProjects from './pages/ManageProjects';
 import Users from './pages/ManageUsers';
 import KickPage from './pages/KickPage';
+import ManageTeam from './pages/ManageTeam';
 
 library.add(faThLarge, faProjectDiagram, faCaretRight, faFileCode, faSignOutAlt, faCommentDots, faCog, faTimes, faComment);
 
@@ -32,6 +33,9 @@ const getUserTeamQuery = gql`
 		getUserTeam {
 			id
 			name
+			settings {
+				acceptInvites
+			}
 			inviteLink
 			projects {
 				id
@@ -239,6 +243,7 @@ function App() {
 					<Route path="/manage-projects/:id" element={<ManageProjects />} />
 					<Route path="/manage-projects" element={<ManageProjects />} />
 					<Route path="/manage-users" element={<Users />} />
+					<Route path="/manage-team" element={<ManageTeam />} />
 					<Route path="/messages" element={<Messages />} />
 					<Route path="/settings" element={<Settings />} />
 					<Route path="/kicked" element={<KickPage />} />

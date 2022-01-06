@@ -9,7 +9,7 @@ import { selectTeam, deleteUserFromTeam } from '../features/team/teamSlice';
 
 import ManageUsersTable from '../components/molecules/ManageUsersTable';
 
-const KickFromTeamMutation = gql`
+const kickFromTeamMutation = gql`
     mutation kickFromTeam($teamId: String!, $userId: String!) {
         kickFromTeam(teamId: $teamId, userId: $userId)
     }
@@ -42,7 +42,7 @@ const Users = () => {
     const teamSelector = useAppSelector(selectTeam);
     const [ userIdToKick, setUserIdToKick ] = useState('');
     const { user } = useAuth0();
-    const [ kickFromTeam, { data } ] = useMutation(KickFromTeamMutation);
+    const [ kickFromTeam, { data } ] = useMutation(kickFromTeamMutation);
 
     const handleUserClick = (id: string) => {
         if (window.confirm('Are you sure you want to kick this user?')) {

@@ -80,7 +80,7 @@ const InviteRequests = ({ users, teamId }: IInviteRequests) => {
     return (
         <Container>
             {
-                users.length > 0 ? (
+                users && users.length > 0 ? (
                     <InvitesList>
                         {
                             users.map(user => {

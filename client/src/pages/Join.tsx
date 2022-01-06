@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useParams, Navigate } from 'react-router';
 import { useAuth0 } from "@auth0/auth0-react";
@@ -26,9 +26,10 @@ const Container = styled.div`
 const Join = () => {
     const { id } = useParams();
     const { isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
+    const [ errorMsg, setErrorMsg ] = useState('');
     const [ joinTeam ] = useMutation(joinTeamMutation, {
         onError: err => {
-            console.log(err);
+            setErrorMsg(err.message);
         }
     });
 
@@ -56,7 +57,7 @@ const Join = () => {
     return (
         <Container>
             <WelcomeText>The invite request has been send!</WelcomeText> 
-            <ExplanationText>Please wait for acceptation</ExplanationText>
+            <ExplanationText>{errorMsg ? errorMsg : 'Please wait for acceptation'}</ExplanationText>
         </Container>
     );
 };

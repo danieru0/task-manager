@@ -57,7 +57,13 @@ const TeamSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'user'
     }],
-    projects: [ProjectModel]
+    projects: [ProjectModel],
+    settings: {
+        acceptInvites: {
+            type: Boolean,
+            required: true
+        }
+    }
 })
 
 TeamSchema.plugin(deepPopulate);

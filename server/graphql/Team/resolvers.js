@@ -44,7 +44,10 @@ const mutations = {
             inviteLink: `/#/join/${uuidv4()}`,
             inviteRequests: [],
             users: [user],
-            projects: []
+            projects: [],
+            settings: {
+                acceptInvites: true
+            }
         })
 
         user.team = newTeam;
@@ -66,6 +69,8 @@ const mutations = {
 
         const isUserSendInvite = team.inviteRequests.find(request => request.id === userAuth.decoded.sub);
         if (isUserSendInvite) throw new ValidationError('You have already send request to this team!');
+
+        if (!team.settings.acceptInvites) throw new ValidationError('Invites are blocked!');
 
         team.inviteRequests.push(user);
 
@@ -341,7 +346,6 @@ const mutations = {
 
         if (userId === userAuth.decoded.sub) throw new ValidationError('You cant kick yourself!');
 
-        
         team.users = team.users.filter(user => user.id !== userId);
         userToKick.team = null;
         
@@ -350,6 +354,22 @@ const mutations = {
         
         const userSocket = allSockets.find(user => user.databaseId === userId);
         if (userSocket) io.to(userSocket.socketId).emit('sendKickFromTeamSocket');
+
+        return true;
+    },
+    setAcceptInvitesSetting: async (_, { teamId, value }, { user: userAuth }) => {
+        if (!userAuth) throw new AuthenticationError('You have to be logged in!');
+
+        const userThatMakesRequest = await User.findOne({id: userAuth.decoded.sub});
+        if (!userThatMakesRequest) throw new ValidationError('User dont exists');
+
+        const team = await Team.findOne({ id: teamId }).deepPopulate('users author');
+        if (!team) throw new ValidationError('There is no team with this id!');
+        if (team.author.id !== userAuth.decoded.sub) throw new ValidationError('You are not author of this team!');
+
+        team.settings.acceptInvites = value;
+
+        await team.save();
 
         return true;
     }

@@ -91,7 +91,7 @@ const DashboardWithTeam = () => {
                     <ManageButtons>
                         <Button size="large" onClick={() => navigate('manage-users')} text="manage users" />
                         <Button size="large" onClick={() => navigate('manage-projects')} text="manage projects" />
-                        <Button size="large" onClick={() => alert('manage')} text="manage team" />
+                        <Button size="large" onClick={() => navigate('manage-team')} text="manage team" />
                     </ManageButtons>
                 </>
             )}

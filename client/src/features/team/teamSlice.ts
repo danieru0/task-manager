@@ -53,6 +53,9 @@ interface TeamInterface {
     users: UserInterface[];
     projects: ProjectInterface[];
     inviteRequests: UserInterface[]
+    settings: {
+        acceptInvites: boolean;
+    }
 }
 
 export interface TeamState {
@@ -177,11 +180,16 @@ export const teamSlice = createSlice({
             if (state.team) {
                 state.team.users = state.team.users.filter(user => user.id !== action.payload);
             }
+        },
+        updateAcceptInvitesSetting: (state, action: PayloadAction<boolean>) => {
+            if (state.team) {
+                state.team.settings.acceptInvites = action.payload;
+            }
         }
     }
 })
 
-export const { setTeam, removeInviteRequest, addInviteRequest, addProject, removeProject, addKanban, removeKanban, addTask, moveTask, addComment, clearTeamData, deleteUserFromTeam } = teamSlice.actions;
+export const { setTeam, removeInviteRequest, addInviteRequest, addProject, removeProject, addKanban, removeKanban, addTask, moveTask, addComment, clearTeamData, deleteUserFromTeam, updateAcceptInvitesSetting } = teamSlice.actions;
 
 export const selectTeam = (state: RootState) => state.team;
 

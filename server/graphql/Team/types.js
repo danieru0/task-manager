@@ -33,6 +33,10 @@ const types = `
         kanbans: [Kanban]!
     }
 
+    type Settings {
+        acceptInvites: Boolean!
+    }
+
     type Team {
         id: String!
         name: String!
@@ -41,6 +45,7 @@ const types = `
         author: User!
         inviteLink: String!
         inviteRequests: [User]!
+        settings: Settings
     }
 `
 

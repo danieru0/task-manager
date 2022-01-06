@@ -10,6 +10,7 @@ const mutations = `
     deleteKanban(teamId: String!, projectId: String!, kanbanId: String!): DeleteKanbanResult
     deleteProject(teamId: String!, projectId: String!): String
     kickFromTeam(teamId: String!, userId: String!): Boolean
+    setAcceptInvitesSetting(teamId: String!, value: Boolean!): Boolean
 `
 
 module.exports = mutations;
